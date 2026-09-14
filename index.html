@@ -244,6 +244,72 @@
       border-color: var(--accent-crimson);
     }
 
+    .capacity-banner {
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+
+    /* PUSH TO TALK BUTTON SECTION */
+    .ptt-wrapper {
+      margin-bottom: 24px;
+      padding: 18px;
+      background: rgba(255, 59, 48, 0.06);
+      border: 1px dashed rgba(255, 59, 48, 0.35);
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .ptt-title {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--accent-crimson);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .ptt-btn {
+      width: 100%;
+      padding: 16px;
+      background: rgba(255, 59, 48, 0.15);
+      border: 2px solid var(--accent-crimson);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 1.5px;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ptt-btn:active, .ptt-btn.transmitting {
+      background: var(--accent-crimson);
+      box-shadow: 0 0 25px rgba(255, 59, 48, 0.8);
+      transform: scale(0.98);
+    }
+
+    .ptt-indicator {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      margin-top: 8px;
+      color: var(--text-muted);
+    }
+
     .rec-studio {
       display: flex;
       flex-direction: column;
@@ -500,6 +566,24 @@
         <button class="logout-btn" onclick="logout()">LOG OUT</button>
       </div>
 
+      <!-- 50-SLOT CAPACITY INDICATOR -->
+      <div class="capacity-banner">
+        <span>STORAGE RETENTION: 50-TRACK BUFFER</span>
+        <span style="color:var(--accent-cyan);">FIFO QUEUE ACTIVE (MAX 50)</span>
+      </div>
+
+      <!-- PUSH TO TALK LIVE VOICEOVER CONSOLE -->
+      <div class="ptt-wrapper">
+        <div class="ptt-title">⚡ Contributor Override: Live Voiceover</div>
+        <button id="pttButton" class="ptt-btn" type="button">
+          <svg style="width:20px;height:20px;fill:currentColor;" viewBox="0 0 24 24">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+          <span id="pttLabel">HOLD TO SPEAK LIVE</span>
+        </button>
+        <div id="pttStatus" class="ptt-indicator">Press & hold to broadcast directly over station music</div>
+      </div>
+
       <div class="tabs">
         <button id="tabMicBtn" class="tab-btn active" onclick="switchStudioTab('mic')">LIVE MIC CONSOLE</button>
         <button id="tabFileBtn" class="tab-btn" onclick="switchStudioTab('file')">AUDIO FILE INGEST</button>
@@ -596,7 +680,6 @@
     let recordedChunks = [];
     let audioContext = null;
     let analyserNode = null;
-    let meterGainNode = null;
     let animationFrameId = null;
     let recTimerId = null;
     let recStartTime = 0;
@@ -605,9 +688,16 @@
     let processedBlob = null;
     let processedDuration = 0;
 
+    // Push-to-Talk State
+    let pttStream = null;
+    let pttRecorder = null;
+    let pttChunks = [];
+    let isPttActive = false;
+
     window.addEventListener("DOMContentLoaded", () => {
       checkStoredSession();
       initAudioDropzone();
+      initPushToTalkHandlers();
     });
 
     // Alert Display Helper
@@ -734,9 +824,8 @@
     function logout() {
       localStorage.removeItem("PULSE_RADIO_AUTH_SESSION");
       currentUserSession = null;
-      if (audioStream) {
-        audioStream.getTracks().forEach(t => t.stop());
-      }
+      if (audioStream) audioStream.getTracks().forEach(t => t.stop());
+      if (pttStream) pttStream.getTracks().forEach(t => t.stop());
       location.reload();
     }
 
@@ -803,7 +892,6 @@
         analyserNode.fftSize = 256;
         sourceNode.connect(analyserNode);
 
-        // Codec selection priority
         let mimeType = "audio/webm;codecs=opus";
         if (!MediaRecorder.isTypeSupported(mimeType)) {
           mimeType = MediaRecorder.isTypeSupported("audio/ogg;codecs=opus") ? "audio/ogg;codecs=opus" : "audio/mp4";
@@ -824,7 +912,6 @@
           document.getElementById("previewBox").style.display = "block";
           document.getElementById("publishBtn").disabled = false;
 
-          // Compute exact duration
           const arrayBuffer = await processedBlob.arrayBuffer();
           const decoded = await audioContext.decodeAudioData(arrayBuffer.slice(0));
           processedDuration = decoded.duration;
@@ -895,7 +982,6 @@
         animationFrameId = requestAnimationFrame(draw);
         analyserNode.getByteTimeDomainData(dataArray);
 
-        // Peak / RMS Computation
         let sum = 0;
         let peak = 0;
         for (let i = 0; i < bufferLength; i++) {
@@ -916,7 +1002,6 @@
           clip.textContent = `${Math.round(peak * 100)}% PEAK`;
         }
 
-        // Render Waveform Canvas
         ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 2;
@@ -937,6 +1022,122 @@
         ctx.stroke();
       }
       draw();
+    }
+
+    // PUSH-TO-TALK LOGIC
+    function initPushToTalkHandlers() {
+      const pttBtn = document.getElementById("pttButton");
+      
+      const startPTT = (e) => {
+        e.preventDefault();
+        if (isPttActive) return;
+        beginLiveVoiceoverCapture();
+      };
+      
+      const stopPTT = (e) => {
+        e.preventDefault();
+        if (!isPttActive) return;
+        endLiveVoiceoverCapture();
+      };
+
+      pttBtn.addEventListener("mousedown", startPTT);
+      pttBtn.addEventListener("mouseup", stopPTT);
+      pttBtn.addEventListener("mouseleave", stopPTT);
+
+      pttBtn.addEventListener("touchstart", startPTT, { passive: false });
+      pttBtn.addEventListener("touchend", stopPTT, { passive: false });
+      pttBtn.addEventListener("touchcancel", stopPTT, { passive: false });
+    }
+
+    async function beginLiveVoiceoverCapture() {
+      if (!currentUserSession) {
+        showAlert("Authenticate to use Push-to-Talk.");
+        return;
+      }
+      try {
+        isPttActive = true;
+        const pttBtn = document.getElementById("pttButton");
+        const pttLabel = document.getElementById("pttLabel");
+        const pttStatus = document.getElementById("pttStatus");
+        
+        pttBtn.classList.add("transmitting");
+        pttLabel.textContent = "🔴 ON AIR - SPEAK NOW";
+        pttStatus.textContent = "Transmitting live voiceover snippet...";
+
+        pttStream = await navigator.mediaDevices.getUserMedia({
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        });
+
+        let mimeType = "audio/webm;codecs=opus";
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = MediaRecorder.isTypeSupported("audio/ogg;codecs=opus") ? "audio/ogg;codecs=opus" : "audio/mp4";
+        }
+
+        pttChunks = [];
+        pttRecorder = new MediaRecorder(pttStream, { mimeType });
+
+        pttRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) pttChunks.push(e.data);
+        };
+
+        pttRecorder.start(100);
+      } catch (err) {
+        isPttActive = false;
+        showAlert("Push-to-Talk hardware failure: " + err.message);
+      }
+    }
+
+    async function endLiveVoiceoverCapture() {
+      if (!isPttActive || !pttRecorder) return;
+      isPttActive = false;
+      const pttBtn = document.getElementById("pttButton");
+      const pttLabel = document.getElementById("pttLabel");
+      const pttStatus = document.getElementById("pttStatus");
+
+      pttBtn.classList.remove("transmitting");
+      pttLabel.textContent = "HOLD TO SPEAK LIVE";
+      pttStatus.textContent = "Encoding and broadcasting live voiceover...";
+
+      pttRecorder.onstop = async () => {
+        try {
+          const voiceBlob = new Blob(pttChunks, { type: pttRecorder.mimeType || "audio/webm" });
+          if (pttStream) {
+            pttStream.getTracks().forEach(t => t.stop());
+            pttStream = null;
+          }
+
+          const arrayBuffer = await voiceBlob.arrayBuffer();
+          let binaryString = "";
+          const bytes = new Uint8Array(arrayBuffer);
+          const len = bytes.byteLength;
+          const chunkSize = 0x8000;
+          for (let i = 0; i < len; i += chunkSize) {
+            binaryString += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, len)));
+          }
+          const base64Voice = btoa(binaryString);
+
+          const resp = await executeGasRequest({
+            action: "broadcastLiveVoiceover",
+            auth: {
+              username: currentUserSession.username,
+              token: currentUserSession.token
+            },
+            voiceData: base64Voice,
+            mimeType: voiceBlob.type
+          });
+
+          if (resp.success) {
+            pttStatus.textContent = "Broadcast sent! Ducking radio and playing on listeners...";
+            setTimeout(() => { pttStatus.textContent = "Press & hold to broadcast directly over station music"; }, 4000);
+          } else {
+            pttStatus.textContent = "Voice broadcast error: " + resp.error;
+          }
+        } catch (e) {
+          pttStatus.textContent = "Voiceover network failure: " + e.message;
+        }
+      };
+
+      pttRecorder.stop();
     }
 
     // Drag and Drop File Ingest
@@ -981,7 +1182,6 @@
       document.getElementById("previewBox").style.display = "block";
       document.getElementById("publishBtn").disabled = false;
 
-      // Calculate Duration
       const tempAudio = new Audio();
       tempAudio.src = audioUrl;
       tempAudio.addEventListener("loadedmetadata", () => {
@@ -1044,7 +1244,7 @@
           fileData: base64Data
         };
 
-        setProgress("Stage 4/4: Executing Drive FIFO & Sheet Sync...", 90);
+        setProgress("Stage 4/4: Executing Drive FIFO (Cap: 50) & Sheet Sync...", 90);
         const response = await executeGasRequest(payload);
 
         if (response.success) {

@@ -44,6 +44,32 @@
       align-items: center;
     }
 
+    /* Non-intrusive Unmute floating pill */
+    .unmute-pill {
+      position: fixed;
+      top: 16px;
+      background: rgba(0, 240, 255, 0.9);
+      color: #000;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.4);
+      cursor: pointer;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      animation: pillFloat 2s ease-in-out infinite;
+    }
+
+    @keyframes pillFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
     /* Header */
     header {
       width: 100%;
@@ -85,7 +111,9 @@
     .listeners-count {
       font-family: var(--font-mono);
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: var(--accent-cyan);
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     /* Turntable / Vinyl Console */
@@ -197,10 +225,11 @@
       transition: width 0.25s linear;
     }
 
-    /* Master Hardware Controls */
+    /* Master Controls (Skip Buttons Removed) */
     .controls {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 24px;
       margin-bottom: 32px;
     }
@@ -219,11 +248,6 @@
       transition: all 0.2s;
     }
 
-    .ctrl-btn:hover {
-      border-color: var(--accent-cyan);
-      transform: scale(1.05);
-    }
-
     .ctrl-btn.btn-play {
       width: 72px;
       height: 72px;
@@ -238,15 +262,10 @@
       transform: scale(1.06);
     }
 
-    .ctrl-btn svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-    }
-
     .btn-play svg {
       width: 32px;
       height: 32px;
+      fill: currentColor;
     }
 
     /* Volume Slider */
@@ -278,7 +297,7 @@
       box-shadow: 0 0 8px var(--accent-cyan);
     }
 
-    /* Queue Drawer */
+    /* Recently Played History Drawer (Last 3 Tracks) */
     .queue-panel {
       width: 100%;
       background: var(--bg-card);
@@ -311,8 +330,6 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      max-height: 260px;
-      overflow-y: auto;
     }
 
     .queue-item {
@@ -327,11 +344,6 @@
       transition: all 0.2s;
     }
 
-    .queue-item.active {
-      border-color: var(--accent-cyan);
-      background: rgba(0, 240, 255, 0.05);
-    }
-
     .queue-left {
       display: flex;
       align-items: center;
@@ -344,52 +356,10 @@
       border-radius: 4px;
       font-family: var(--font-mono);
       font-weight: 700;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
     }
 
-    .queue-tag.now-playing {
-      background: var(--accent-cyan);
-      color: #000;
-    }
-
-    .queue-tag.up-next {
-      background: var(--accent-violet);
-      color: #FFF;
-    }
-
-    /* Autoplay Gate Overlay */
-    .tune-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(9, 10, 15, 0.96);
-      backdrop-filter: blur(20px);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      transition: opacity 0.5s ease;
-    }
-
-    .tune-btn {
-      background: linear-gradient(135deg, var(--accent-cyan), #00A3FF);
-      color: #000;
-      border: none;
-      padding: 20px 48px;
-      border-radius: 999px;
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: 2px;
-      cursor: pointer;
-      box-shadow: 0 0 40px rgba(0, 240, 255, 0.5);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .tune-btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 60px rgba(0, 240, 255, 0.8);
-    }
-
-    /* Non-blocking Toast */
     .toast {
       position: fixed;
       bottom: 24px;
@@ -413,12 +383,9 @@
 </head>
 <body>
 
-  <!-- AUTOPLAY UNLOCK OVERLAY -->
-  <div id="tuneOverlay" class="tune-overlay">
-    <button class="tune-btn" onclick="unlockAudioAndStart()">TUNE IN TO LIVE STREAM</button>
-    <p style="color:var(--text-muted);font-family:var(--font-mono);margin-top:16px;font-size:0.8rem;">
-      AUTHENTICATING SERVERLESS DRIVE AUDIO BUFFER
-    </p>
+  <!-- FLOATING UNMUTE NOTIFICATION PILL -->
+  <div id="unmutePill" class="unmute-pill" onclick="handleUserUnlockInteraction()">
+    <span>🔊 TAP ANYWHERE TO UNMUTE</span>
   </div>
 
   <div class="container">
@@ -427,7 +394,7 @@
         <span class="live-dot"></span>
         <span>ON AIR</span>
       </div>
-      <div class="listeners-count" id="listenerReadout">SYNCHRONIZED // DRIVE BUFFER</div>
+      <div class="listeners-count" id="listenerReadout">LISTENERS: 1 ACTIVE</div>
     </header>
 
     <!-- VINYL TURNTABLE -->
@@ -454,18 +421,10 @@
       <div id="streamProgressBar" class="live-progress-bar"></div>
     </div>
 
-    <!-- HARDWARE PLAYBACK CONTROLS -->
+    <!-- MASTER PLAYBACK CONTROLS (SKIP FORBIDDEN) -->
     <div class="controls">
-      <button class="ctrl-btn" onclick="skipToPreviousTrack()" title="Previous Transmission">
-        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
-      </button>
-
       <button id="masterPlayBtn" class="ctrl-btn btn-play" onclick="togglePlayback()" title="Play / Pause">
         <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-
-      <button class="ctrl-btn" onclick="skipToNextTrack()" title="Next Transmission">
-        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
       </button>
     </div>
 
@@ -477,52 +436,66 @@
       <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.85" oninput="handleVolumeChange(event)">
     </div>
 
-    <!-- LIVE BUFFER QUEUE DRAWER -->
+    <!-- RECENTLY PLAYED HISTORY DRAWER (LAST 3 TRACKS ONLY) -->
     <div class="queue-panel">
       <div class="queue-header">
-        <h4>Active Transmission Buffer (FIFO Queue)</h4>
-        <span id="queueCount" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);">0 Tracks</span>
+        <h4>Recently Played (Last 3 Tracks)</h4>
+        <span id="historyCount" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);">0 Records</span>
       </div>
-      <ul id="queueList" class="queue-list"></ul>
+      <ul id="recentlyPlayedList" class="queue-list"></ul>
     </div>
   </div>
 
   <div id="toastNotification" class="toast"></div>
 
-  <!-- PERSISTENT BACKGROUND AUDIO ELEMENT -->
+  <!-- MAIN AUDIO CHANNEL & OVERLAY VOICEOVER CHANNEL -->
   <audio id="radioAudio" playsinline webkit-playsinline preload="auto"></audio>
+  <audio id="voiceoverAudio" playsinline webkit-playsinline preload="auto"></audio>
 
   <script>
     /**
      * ENDPOINT CONFIGURATION: Paste your deployed Google Apps Script URL below
      */
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
-    const POLL_INTERVAL = 20000; // Poll Google Drive manifest every 20 seconds
+    const POLL_INTERVAL = 15000; // Poll manifest, heartbeat, and voiceover every 15 seconds
 
     // Audio Engine State
     let audioCtx = null;
     let analyser = null;
     let audioSource = null;
-    let isUnlocked = false;
     let isPlaying = false;
     let currentTrackIndex = 0;
     let animationFrame = null;
-    let currentBlobUrl = null; // Track and revoke object URLs to prevent leaks
+    let currentBlobUrl = null;
     let isTrackLoading = false;
+    let userBaseVolume = 0.85;
 
-    // Queue Buffers
+    // Ephemeral Client Listener ID
+    let listenerSessionId = localStorage.getItem("PULSE_RADIO_LISTENER_ID");
+    if (!listenerSessionId) {
+      listenerSessionId = "listener_" + Math.random().toString(36).substring(2, 12);
+      localStorage.setItem("PULSE_RADIO_LISTENER_ID", listenerSessionId);
+    }
+
+    // Queues & Last 3 History Buffer
     let currentQueue = [];
     let priorityQueue = [];
+    let recentlyPlayedHistory = [];
     let pollTimerId = null;
+    let lastVoiceoverId = null;
 
     const audioElement = document.getElementById("radioAudio");
+    const voiceoverElement = document.getElementById("voiceoverAudio");
 
     window.addEventListener("DOMContentLoaded", () => {
       initAudioElementListeners();
       initVisibilityChangeHandler();
+      setupGlobalAutoplayUnlockListener();
+      
+      // Direct load and instant audio setup
+      bootstrapLiveStation();
     });
 
-    // Display Non-blocking Notification Toast
     function showToast(message) {
       const toast = document.getElementById("toastNotification");
       toast.textContent = message;
@@ -530,15 +503,35 @@
       setTimeout(() => { toast.classList.remove("visible"); }, 4000);
     }
 
-    // Autoplay Unlock Handler
-    async function unlockAudioAndStart() {
+    // Autoplay Unlocker & Gesture Interceptors
+    function setupGlobalAutoplayUnlockListener() {
+      const unlockEvents = ["click", "touchstart", "keydown"];
+      const unlocker = () => {
+        handleUserUnlockInteraction();
+        unlockEvents.forEach(evt => document.removeEventListener(evt, unlocker));
+      };
+      unlockEvents.forEach(evt => document.addEventListener(evt, unlocker));
+    }
+
+    function handleUserUnlockInteraction() {
+      const pill = document.getElementById("unmutePill");
+      pill.style.display = "none";
+
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      audioElement.muted = false;
+      audioElement.volume = userBaseVolume;
+
+      if (audioElement.paused && currentQueue.length > 0) {
+        audioElement.play().catch(err => console.warn("Playback resume retry:", err));
+      }
+    }
+
+    async function bootstrapLiveStation() {
       try {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") {
-          await audioCtx.resume();
-        }
-
-        // Setup Audio Analyser
+        
         try {
           audioSource = audioCtx.createMediaElementSource(audioElement);
           analyser = audioCtx.createAnalyser();
@@ -548,22 +541,19 @@
           analyser.connect(audioCtx.destination);
           renderVisualizer();
         } catch (e) {
-          console.warn("MediaElementSource connection note: Visualizer in fallback mode.");
+          console.warn("Visualizer operating in fallback mode.");
         }
 
-        const overlay = document.getElementById("tuneOverlay");
-        overlay.style.opacity = "0";
-        setTimeout(() => { overlay.style.display = "none"; }, 500);
+        audioElement.volume = userBaseVolume;
 
-        isUnlocked = true;
+        // Fetch manifest immediately
         await fetchLiveManifest();
         pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
       } catch (err) {
-        console.error("Audio unlock failed: ", err);
+        console.error("Bootstrap error:", err);
       }
     }
 
-    // Media Event Listeners
     function initAudioElementListeners() {
       audioElement.addEventListener("ended", handleTrackEnded);
       
@@ -592,7 +582,7 @@
         }
         console.error("Audio playback failure:", details, e);
         showToast(`Skipped track (${details}). Advancing...`);
-        setTimeout(skipToNextTrack, 1500);
+        setTimeout(handleTrackEnded, 1500);
       });
 
       audioElement.addEventListener("play", () => {
@@ -604,15 +594,19 @@
         isPlaying = false;
         updatePlayStateUI();
       });
+
+      // Voiceover Channel Handlers for Audio Ducking
+      voiceoverElement.addEventListener("ended", restoreMainVolume);
+      voiceoverElement.addEventListener("error", restoreMainVolume);
     }
 
-    // Media Session API Sync
+    // Media Session Integration (Skip explicitly disabled)
     function syncMediaSession(track) {
       if ("mediaSession" in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: track.title || track.fileName,
           artist: "Contributor: " + (track.uploaderName || "Anonymous"),
-          album: "Pulse Radio // Live Drive Buffer",
+          album: "Pulse Radio // Live 50-Buffer",
           artwork: [
             { src: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=512&q=80", sizes: "512x512", type: "image/jpeg" }
           ]
@@ -620,29 +614,42 @@
 
         navigator.mediaSession.setActionHandler("play", () => togglePlayback());
         navigator.mediaSession.setActionHandler("pause", () => togglePlayback());
-        navigator.mediaSession.setActionHandler("nexttrack", () => skipToNextTrack());
-        navigator.mediaSession.setActionHandler("previoustrack", () => skipToPreviousTrack());
+        
+        // Remove skip ability from system lock screens
+        try { navigator.mediaSession.setActionHandler("nexttrack", null); } catch(e){}
+        try { navigator.mediaSession.setActionHandler("previoustrack", null); } catch(e){}
       }
     }
 
-    // Manifest Polling & Queue Synchronization
+    // Manifest Polling, Heartbeat, and Voiceover Check
     async function fetchLiveManifest() {
       try {
-        const res = await fetch(`${GAS_ENDPOINT_URL}?action=getLiveManifest`, {
-          method: "GET",
-          mode: "cors"
-        });
+        const endpoint = `${GAS_ENDPOINT_URL}?action=getLiveManifest&listenerId=${encodeURIComponent(listenerSessionId)}`;
+        const res = await fetch(endpoint, { method: "GET", mode: "cors" });
         const json = await res.json();
 
-        if (json.success && json.data.manifest) {
-          reconcileIncomingManifest(json.data.manifest);
+        if (json.success && json.data) {
+          // Update live listener counter
+          if (json.data.activeListeners !== undefined) {
+            document.getElementById("listenerReadout").textContent = 
+              `LISTENERS: ${json.data.activeListeners} ACTIVE`;
+          }
+
+          // Handle incoming live voiceover snippets
+          if (json.data.liveVoiceover && json.data.liveVoiceover.voiceId !== lastVoiceoverId) {
+            lastVoiceoverId = json.data.liveVoiceover.voiceId;
+            triggerLiveVoiceoverDucking(json.data.liveVoiceover);
+          }
+
+          if (json.data.manifest) {
+            reconcileIncomingManifest(json.data.manifest);
+          }
         }
       } catch (err) {
         console.warn("Background manifest poll failed. Will retry.", err);
       }
     }
 
-    // Manifest Diffing & Urgent Queue Insertion
     function reconcileIncomingManifest(incomingTracks) {
       if (incomingTracks.length === 0) {
         document.getElementById("currentTitle").textContent = "Station Idle: No active broadcasts found.";
@@ -653,11 +660,9 @@
         currentQueue = incomingTracks;
         currentTrackIndex = 0;
         loadAndPlayTrack(currentQueue[0]);
-        renderQueueList();
         return;
       }
 
-      // Check for mid-stream arrivals
       const existingIds = new Set(currentQueue.map(t => t.contentId));
       const newlyAddedTracks = incomingTracks.filter(t => !existingIds.has(t.contentId));
 
@@ -675,18 +680,19 @@
       if (newIndex !== -1) {
         currentTrackIndex = newIndex;
       }
-
-      renderQueueList();
     }
 
-    // Track Progression Logic
+    // Progression: Record Completed Track to Last 3 History Buffer
     function handleTrackEnded() {
+      const finishedTrack = currentQueue[currentTrackIndex];
+      if (finishedTrack) {
+        recordTrackToRecentlyPlayed(finishedTrack);
+      }
+
       if (priorityQueue.length > 0) {
         const nextUrgentTrack = priorityQueue.shift();
         const foundIdx = currentQueue.findIndex(t => t.contentId === nextUrgentTrack.contentId);
-        if (foundIdx !== -1) {
-          currentTrackIndex = foundIdx;
-        }
+        if (foundIdx !== -1) currentTrackIndex = foundIdx;
         loadAndPlayTrack(nextUrgentTrack);
       } else {
         currentTrackIndex++;
@@ -695,42 +701,78 @@
         }
         loadAndPlayTrack(currentQueue[currentTrackIndex]);
       }
-      renderQueueList();
     }
 
-    // PROXIED AUDIO FETCH, BLOB CONVERSION & STREAMING
+    // Maintain only the Last 3 Completed Tracks
+    function recordTrackToRecentlyPlayed(track) {
+      recentlyPlayedHistory.unshift({
+        title: track.title || track.fileName,
+        uploaderUsername: track.uploaderUsername,
+        durationSeconds: track.durationSeconds || 0,
+        completedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      if (recentlyPlayedHistory.length > 3) {
+        recentlyPlayedHistory.pop();
+      }
+
+      renderRecentlyPlayedList();
+    }
+
+    function renderRecentlyPlayedList() {
+      const list = document.getElementById("recentlyPlayedList");
+      list.innerHTML = "";
+      document.getElementById("historyCount").textContent = `${recentlyPlayedHistory.length} / 3 Logged`;
+
+      if (recentlyPlayedHistory.length === 0) {
+        list.innerHTML = `<li style="font-size:0.8rem;color:var(--text-muted);padding:8px 0;">No completed transmissions yet.</li>`;
+        return;
+      }
+
+      recentlyPlayedHistory.forEach((item) => {
+        const li = document.createElement("li");
+        li.className = "queue-item";
+        li.innerHTML = `
+          <div class="queue-left">
+            <span class="queue-tag">PLAYED</span>
+            <div>
+              <div style="font-weight:600;">${item.title}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">@${item.uploaderUsername} &bull; ${item.completedAt}</div>
+            </div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);">
+            ${formatTime(item.durationSeconds)}
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Proxied Audio Fetch & Autoplay Mitigation
     async function loadAndPlayTrack(track) {
       if (!track || isTrackLoading) return;
       isTrackLoading = true;
 
-      // Update UI to buffering state
       document.getElementById("currentTitle").textContent = "Buffering: " + (track.title || track.fileName);
       document.getElementById("currentContributor").textContent = `BROADCAST BY @${track.uploaderUsername} (${track.uploaderName})`;
 
       try {
-        // Fetch raw binary payload through Apps Script proxy
         const streamUrl = `${GAS_ENDPOINT_URL}?action=streamAudio&fileId=${encodeURIComponent(track.fileId)}`;
-        const res = await fetch(streamUrl, {
-          method: "GET",
-          mode: "cors"
-        });
+        const res = await fetch(streamUrl, { method: "GET", mode: "cors" });
         const json = await res.json();
 
         if (!json.success || !json.base64) {
           throw new Error(json.error || "Backend stream returned invalid payload");
         }
 
-        // Decode Base64 to Binary TypedArray
         const byteCharacters = atob(json.base64);
         const byteNumbers = new Uint8Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
 
-        // Construct in-memory Blob and create local object URL
         const audioBlob = new Blob([byteNumbers], { type: json.mimeType || track.mimeType || "audio/webm" });
 
-        // Revoke old URL to free memory
         if (currentBlobUrl) {
           URL.revokeObjectURL(currentBlobUrl);
         }
@@ -742,26 +784,94 @@
         const playPromise = audioElement.play();
         if (playPromise !== undefined) {
           playPromise.catch(error => {
-            console.warn("Autoplay block or playback interruption: ", error);
+            console.warn("Unmuted autoplay restricted by browser policy. Displaying unmute pill.");
+            // Keep muted so stream starts; user un-mutes via interaction
+            audioElement.muted = true;
+            audioElement.play().catch(e => console.warn("Muted playback attempt:", e));
+            document.getElementById("unmutePill").style.display = "inline-flex";
           });
         }
 
         document.getElementById("currentTitle").textContent = track.title || track.fileName;
         syncMediaSession(track);
-        renderQueueList();
       } catch (err) {
         console.error("Failed to stream audio via proxy:", err);
         showToast("Error buffering track: " + err.message);
-        setTimeout(skipToNextTrack, 1500);
+        setTimeout(handleTrackEnded, 1500);
       } finally {
         isTrackLoading = false;
       }
     }
 
+    // Push-to-Talk Live Voiceover Ducking Engine
+    function triggerLiveVoiceoverDucking(voData) {
+      try {
+        showToast(`⚡ Live Contributor Voiceover: @${voData.uploaderUsername}`);
+        
+        // Duck main radio audio down to 20%
+        duckMainVolume(0.2, 300);
+
+        // Convert voiceover base64 to blob URL
+        const byteChars = atob(voData.base64);
+        const byteNumbers = new Uint8Array(byteChars.length);
+        for (let i = 0; i < byteChars.length; i++) {
+          byteNumbers[i] = byteChars.charCodeAt(i);
+        }
+        const voBlob = new Blob([byteNumbers], { type: voData.mimeType || "audio/webm" });
+        const voUrl = URL.createObjectURL(voBlob);
+
+        voiceoverElement.src = voUrl;
+        voiceoverElement.volume = 1.0;
+        voiceoverElement.play().catch(err => {
+          console.warn("Voiceover playback error: ", err);
+          restoreMainVolume();
+        });
+      } catch (e) {
+        console.error("Voiceover ducking failed:", e);
+        restoreMainVolume();
+      }
+    }
+
+    function duckMainVolume(targetVolRatio, durationMs) {
+      const startVol = audioElement.volume;
+      const targetVol = userBaseVolume * targetVolRatio;
+      const steps = 15;
+      const stepInterval = durationMs / steps;
+      let currentStep = 0;
+
+      const duckTimer = setInterval(() => {
+        currentStep++;
+        audioElement.volume = Math.max(0.05, startVol + ((targetVol - startVol) * (currentStep / steps)));
+        if (currentStep >= steps) {
+          clearInterval(duckTimer);
+          audioElement.volume = targetVol;
+        }
+      }, stepInterval);
+    }
+
+    function restoreMainVolume() {
+      const startVol = audioElement.volume;
+      const targetVol = userBaseVolume;
+      const steps = 15;
+      const stepInterval = 300 / steps;
+      let currentStep = 0;
+
+      const restoreTimer = setInterval(() => {
+        currentStep++;
+        audioElement.volume = Math.min(1.0, startVol + ((targetVol - startVol) * (currentStep / steps)));
+        if (currentStep >= steps) {
+          clearInterval(restoreTimer);
+          audioElement.volume = targetVol;
+        }
+      }, stepInterval);
+    }
+
     function togglePlayback() {
-      if (!isUnlocked) {
-        unlockAudioAndStart();
-        return;
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      if (audioElement.muted) {
+        audioElement.muted = false;
       }
       if (audioElement.paused) {
         audioElement.play();
@@ -770,19 +880,9 @@
       }
     }
 
-    function skipToNextTrack() {
-      handleTrackEnded();
-    }
-
-    function skipToPreviousTrack() {
-      if (currentQueue.length === 0) return;
-      currentTrackIndex--;
-      if (currentTrackIndex < 0) currentTrackIndex = currentQueue.length - 1;
-      loadAndPlayTrack(currentQueue[currentTrackIndex]);
-    }
-
     function handleVolumeChange(e) {
-      audioElement.volume = parseFloat(e.target.value);
+      userBaseVolume = parseFloat(e.target.value);
+      audioElement.volume = userBaseVolume;
     }
 
     function updatePlayStateUI() {
@@ -798,43 +898,7 @@
       }
     }
 
-    // Queue UI Drawer Rendering
-    function renderQueueList() {
-      const list = document.getElementById("queueList");
-      list.innerHTML = "";
-      document.getElementById("queueCount").textContent = `${currentQueue.length} Active Slots`;
-
-      currentQueue.forEach((track, index) => {
-        const item = document.createElement("li");
-        const isActive = index === currentTrackIndex;
-        item.className = isActive ? "queue-item active" : "queue-item";
-
-        let badgeHtml = "";
-        if (isActive) {
-          badgeHtml = '<span class="queue-tag now-playing">ON AIR</span>';
-        } else if (index === (currentTrackIndex + 1) % currentQueue.length) {
-          badgeHtml = '<span class="queue-tag up-next">UP NEXT</span>';
-        }
-
-        const dateFormatted = new Date(track.uploadTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        item.innerHTML = `
-          <div class="queue-left">
-            ${badgeHtml}
-            <div>
-              <div style="font-weight:600;">${track.title || track.fileName}</div>
-              <div style="font-size:0.75rem;color:var(--text-muted);">@${track.uploaderUsername} &bull; ${dateFormatted}</div>
-            </div>
-          </div>
-          <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);">
-            ${formatTime(track.durationSeconds || 0)}
-          </div>
-        `;
-        list.appendChild(item);
-      });
-    }
-
-    // Web Audio Canvas Visualizer
+    // HiDPI Canvas Visualizer
     function renderVisualizer() {
       const canvas = document.getElementById("visCanvas");
       const ctx = canvas.getContext("2d");
@@ -852,7 +916,6 @@
         if (document.hidden) return;
 
         analyser.getByteFrequencyData(dataArray);
-
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
         const barCount = 48;
@@ -875,7 +938,6 @@
       draw();
     }
 
-    // Battery Preservation Handler
     function initVisibilityChangeHandler() {
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) {
@@ -886,7 +948,6 @@
       });
     }
 
-    // Helper: Seconds to MM:SS
     function formatTime(seconds) {
       const s = parseInt(seconds, 10) || 0;
       const mins = Math.floor(s / 60);
