@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PULSE RADIO // CONTRIBUTOR STUDIO</title>
+  <style>
+    :root {
+      --bg-primary: #090A0F;
+      --bg-surface: #0E1117;
+      --panel-bg: rgba(22, 27, 34, 0.78);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #00F0FF;
+      --accent-cyan-dim: rgba(0, 240, 255, 0.15);
+      --accent-violet: #7928CA;
+      --accent-crimson: #FF3B30;
+      --text-primary: #F0F6FC;
+      --text-muted: #8B949E;
+      --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(121, 40, 202, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 40%);
+      color: var(--text-primary);
+      font-family: var(--font-stack);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      fill: var(--accent-cyan);
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .brand-title span {
+      color: var(--accent-cyan);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .beacon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34C759;
+      box-shadow: 0 0 8px #34C759;
+    }
+
+    .card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .tabs {
+      display: flex;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      border: 1px solid var(--panel-border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn.active {
+      background: var(--accent-cyan-dim);
+      color: var(--accent-cyan);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px var(--accent-cyan-dim);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-cyan), #00A3FF);
+      color: #000;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.1);
+      box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+    }
+
+    .btn-danger {
+      background: var(--accent-crimson);
+      color: #FFF;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border: 1px solid var(--panel-border);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Studio Interface */
+    .user-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .user-info h3 {
+      font-size: 1.1rem;
+      color: var(--text-primary);
+    }
+
+    .user-info p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .logout-btn {
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      color: var(--accent-crimson);
+      border-color: var(--accent-crimson);
+    }
+
+    .rec-studio {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0;
+    }
+
+    .timecode {
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 2px;
+      margin: 16px 0;
+    }
+
+    .meter-container {
+      width: 100%;
+      height: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 5px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .meter-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #34C759 60%, #FFCC00 85%, var(--accent-crimson) 100%);
+      transition: width 0.05s ease;
+    }
+
+    .clip-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #333;
+      color: #666;
+      margin-bottom: 16px;
+      font-family: var(--font-mono);
+    }
+
+    .clip-badge.clipping {
+      background: var(--accent-crimson);
+      color: #FFF;
+      box-shadow: 0 0 8px var(--accent-crimson);
+    }
+
+    .scope-canvas {
+      width: 100%;
+      height: 100px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      border: 1px solid var(--panel-border);
+      margin-bottom: 24px;
+    }
+
+    .record-controls {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .rec-circle-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      border: 2px solid var(--accent-crimson);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: all 0.2s;
+    }
+
+    .rec-circle-inner {
+      width: 30px;
+      height: 30px;
+      background: var(--accent-crimson);
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+
+    .rec-circle-btn.recording {
+      border-color: var(--accent-crimson);
+      box-shadow: 0 0 24px var(--accent-crimson);
+      animation: pulseRecord 1.5s infinite;
+    }
+
+    .rec-circle-btn.recording .rec-circle-inner {
+      border-radius: 6px;
+      transform: scale(0.8);
+    }
+
+    @keyframes pulseRecord {
+      0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
+      70% { box-shadow: 0 0 0 16px rgba(255, 59, 48, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); }
+    }
+
+    .dropzone {
+      border: 2px dashed var(--panel-border);
+      border-radius: 12px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent-cyan);
+      background: var(--accent-cyan-dim);
+    }
+
+    .progress-box {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-bg {
+      height: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+      transition: width 0.3s;
+    }
+
+    .preview-player {
+      width: 100%;
+      margin: 20px 0;
+      display: none;
+    }
+
+    audio {
+      width: 100%;
+      height: 40px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-error {
+      background: rgba(255, 59, 48, 0.15);
+      border: 1px solid var(--accent-crimson);
+      color: #FFB4AB;
+    }
+
+    .alert-success {
+      background: rgba(52, 199, 89, 0.15);
+      border: 1px solid #34C759;
+      color: #B4F8C8;
+    }
+
+    .link-radio {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-top: 16px;
+    }
+
+    .link-radio:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <svg class="brand-logo" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
+        <div class="brand-title">PULSE RADIO // <span>STUDIO</span></div>
+      </div>
+      <div class="status-badge">
+        <span class="beacon"></span>
+        <span id="systemState">SYSTEM READY</span>
+      </div>
+    </header>
+
+    <div id="alertBox" class="alert"></div>
+
+    <!-- AUTHENTICATION CARD -->
+    <div id="authPanel" class="card">
+      <div class="tabs">
+        <button id="tabLoginBtn" class="tab-btn active" onclick="switchAuthTab('login')">SIGN IN</button>
+        <button id="tabRegisterBtn" class="tab-btn" onclick="switchAuthTab('register')">CREATE CONTRIBUTOR ACCOUNT</button>
+      </div>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div id="fullNameGroup" class="form-group" style="display: none;">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" placeholder="e.g. Alex Mercer">
+        </div>
+
+        <div class="form-group">
+          <label for="username">Contributor Username</label>
+          <input type="text" id="username" required placeholder="alphanumeric, no spaces">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Passphrase</label>
+          <input type="password" id="password" required placeholder="Min 8 chars, 1 upper, 1 num, 1 sym">
+        </div>
+
+        <div id="confirmPassGroup" class="form-group" style="display: none;">
+          <label for="confirmPassword">Confirm Passphrase</label>
+          <input type="password" id="confirmPassword" placeholder="Re-enter your passphrase">
+        </div>
+
+        <button type="submit" id="authSubmitBtn" class="btn btn-primary">
+          <span>SIGN IN AS CONTRIBUTOR</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- CONTRIBUTOR STUDIO DASHBOARD CARD -->
+    <div id="studioPanel" class="card" style="display: none;">
+      <div class="user-banner">
+        <div class="user-info">
+          <h3 id="profileName">Contributor</h3>
+          <p id="profileMeta">@user - Lifetime Uploads: 0</p>
+        </div>
+        <button class="logout-btn" onclick="logout()">LOG OUT</button>
+      </div>
+
+      <div class="tabs">
+        <button id="tabMicBtn" class="tab-btn active" onclick="switchStudioTab('mic')">LIVE MIC CONSOLE</button>
+        <button id="tabFileBtn" class="tab-btn" onclick="switchStudioTab('file')">AUDIO FILE INGEST</button>
+      </div>
+
+      <!-- TAB 1: LIVE MIC RECORDER -->
+      <div id="micConsole">
+        <div class="form-group">
+          <label for="micSelect">Audio Input Hardware</label>
+          <select id="micSelect" onchange="switchMicrophoneDevice()"></select>
+        </div>
+
+        <div class="rec-studio">
+          <div id="recordTrigger" class="rec-circle-btn" onclick="toggleRecording()">
+            <div class="rec-circle-inner"></div>
+          </div>
+          <span id="clipIndicator" class="clip-badge">0 dBFS PEAK</span>
+          <div class="timecode" id="recTimecode">00:00:00</div>
+          
+          <div class="meter-container">
+            <div id="meterLevel" class="meter-bar"></div>
+          </div>
+
+          <canvas id="scopeCanvas" class="scope-canvas"></canvas>
+
+          <div class="record-controls">
+            <button id="pauseRecBtn" class="btn btn-secondary" onclick="pauseRecording()" disabled>PAUSE</button>
+            <button id="stopRecBtn" class="btn btn-danger" onclick="stopRecording()" disabled>STOP</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: FILE INGEST -->
+      <div id="fileConsole" style="display: none;">
+        <div class="dropzone" id="dropArea" onclick="document.getElementById('audioFileInput').click()">
+          <svg style="width:48px;height:48px;fill:var(--text-muted);margin-bottom:12px;" viewBox="0 0 24 24">
+            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+          </svg>
+          <p style="font-weight:600;margin-bottom:4px;">Drag & Drop Master Audio File</p>
+          <p style="font-size:0.75rem;color:var(--text-muted);">Accepts MP3, WAV, FLAC, M4A, WEBM, OGG (Max 20MB)</p>
+          <input type="file" id="audioFileInput" accept="audio/*" style="display:none" onchange="handleFileSelect(event)">
+        </div>
+      </div>
+
+      <!-- TAKE PREVIEW & METADATA SUBMISSION -->
+      <div id="submissionContainer" style="margin-top: 24px;">
+        <div id="previewBox" class="preview-player">
+          <label>Review Audio Take</label>
+          <audio id="previewAudio" controls></audio>
+        </div>
+
+        <div class="form-group" style="margin-top: 16px;">
+          <label for="trackTitle">Broadcast Transmission Title</label>
+          <input type="text" id="trackTitle" placeholder="e.g. Midnight Thoughts Episode 12">
+        </div>
+
+        <button id="publishBtn" class="btn btn-primary" onclick="initiateUploadPipeline()" disabled>
+          <span>PUBLISH TO LIVE RADIO BUFFER</span>
+        </button>
+
+        <div id="uploadProgress" class="progress-box">
+          <div class="progress-label">
+            <span id="stageLabel">Preparing...</span>
+            <span id="percentLabel">0%</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div id="progressBar" class="progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="radio.html" class="link-radio" target="_blank">
+        <span>Go to Live Radio Receiver</span>
+        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * ENDPOINT CONFIGURATION: Paste your deployed Google Apps Script URL below
+     */
+    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
+    const CLIENT_SALT = "::pulse_radio_salt_2026";
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB Strict Cap
+
+    // State Variables
+    let currentAuthMode = "login";
+    let currentUserSession = null;
+    let audioStream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let audioContext = null;
+    let analyserNode = null;
+    let meterGainNode = null;
+    let animationFrameId = null;
+    let recTimerId = null;
+    let recStartTime = 0;
+    let recElapsedTime = 0;
+    let isPaused = false;
+    let processedBlob = null;
+    let processedDuration = 0;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      checkStoredSession();
+      initAudioDropzone();
+    });
+
+    // Alert Display Helper
+    function showAlert(msg, isError = true) {
+      const box = document.getElementById("alertBox");
+      box.className = isError ? "alert alert-error" : "alert alert-success";
+      box.textContent = msg;
+      box.style.display = "block";
+      setTimeout(() => { box.style.display = "none"; }, 6000);
+    }
+
+    // SHA-256 Client-Side Cryptographic Hash
+    async function computeSha256(text) {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text + CLIENT_SALT);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    // Session Management
+    function checkStoredSession() {
+      const raw = localStorage.getItem("PULSE_RADIO_AUTH_SESSION");
+      if (raw) {
+        try {
+          currentUserSession = JSON.parse(raw);
+          showStudioView();
+        } catch (e) {
+          localStorage.removeItem("PULSE_RADIO_AUTH_SESSION");
+        }
+      }
+    }
+
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      document.getElementById("tabLoginBtn").className = mode === "login" ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabRegisterBtn").className = mode === "register" ? "tab-btn active" : "tab-btn";
+      document.getElementById("fullNameGroup").style.display = mode === "register" ? "block" : "none";
+      document.getElementById("confirmPassGroup").style.display = mode === "register" ? "block" : "none";
+      document.getElementById("authSubmitBtn").querySelector("span").textContent = 
+        mode === "register" ? "REGISTER CONTRIBUTOR" : "SIGN IN AS CONTRIBUTOR";
+    }
+
+    async function handleAuthSubmit(e) {
+      e.preventDefault();
+      const user = document.getElementById("username").value.trim();
+      const pass = document.getElementById("password").value;
+      const submitBtn = document.getElementById("authSubmitBtn");
+
+      if (currentAuthMode === "register") {
+        const fullName = document.getElementById("fullName").value.trim();
+        const confPass = document.getElementById("confirmPassword").value;
+
+        if (!/^[a-zA-Z0-9_]{3,20}$/.test(user)) {
+          showAlert("Username must be 3-20 characters without spaces.");
+          return;
+        }
+        if (pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass) || !/[^a-zA-Z0-9]/.test(pass)) {
+          showAlert("Password requires at least 8 chars, 1 uppercase, 1 number, and 1 symbol.");
+          return;
+        }
+        if (pass !== confPass) {
+          showAlert("Passwords do not match.");
+          return;
+        }
+
+        submitBtn.disabled = true;
+        const passHash = await computeSha256(pass);
+        
+        try {
+          const resp = await executeGasRequest({
+            action: "registerUser",
+            username: user,
+            passwordHash: passHash,
+            fullName: fullName
+          });
+
+          if (resp.success) {
+            currentUserSession = resp.data;
+            localStorage.setItem("PULSE_RADIO_AUTH_SESSION", JSON.stringify(resp.data));
+            showStudioView();
+          } else {
+            showAlert(resp.error || "Registration failed.");
+          }
+        } catch (err) {
+          showAlert("Network failure contacting backend.");
+        } finally {
+          submitBtn.disabled = false;
+        }
+      } else {
+        submitBtn.disabled = true;
+        const passHash = await computeSha256(pass);
+
+        try {
+          const resp = await executeGasRequest({
+            action: "authenticateUser",
+            username: user,
+            passwordHash: passHash
+          });
+
+          if (resp.success) {
+            currentUserSession = resp.data;
+            localStorage.setItem("PULSE_RADIO_AUTH_SESSION", JSON.stringify(resp.data));
+            showStudioView();
+          } else {
+            showAlert(resp.error || "Authentication failed.");
+          }
+        } catch (err) {
+          showAlert("Network failure during login.");
+        } finally {
+          submitBtn.disabled = false;
+        }
+      }
+    }
+
+    function showStudioView() {
+      document.getElementById("authPanel").style.display = "none";
+      document.getElementById("studioPanel").style.display = "block";
+      document.getElementById("profileName").textContent = currentUserSession.fullName;
+      document.getElementById("profileMeta").textContent = `@${currentUserSession.username} - Active Contributor`;
+      initMicrophoneHardware();
+    }
+
+    function logout() {
+      localStorage.removeItem("PULSE_RADIO_AUTH_SESSION");
+      currentUserSession = null;
+      if (audioStream) {
+        audioStream.getTracks().forEach(t => t.stop());
+      }
+      location.reload();
+    }
+
+    function switchStudioTab(tab) {
+      document.getElementById("tabMicBtn").className = tab === "mic" ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabFileBtn").className = tab === "file" ? "tab-btn active" : "tab-btn";
+      document.getElementById("micConsole").style.display = tab === "mic" ? "block" : "none";
+      document.getElementById("fileConsole").style.display = tab === "file" ? "block" : "none";
+    }
+
+    // Audio Ingestion & Web Audio Engine
+    async function initMicrophoneHardware() {
+      const select = document.getElementById("micSelect");
+      select.innerHTML = "";
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        devices.filter(d => d.kind === "audioinput").forEach((d, idx) => {
+          const opt = document.createElement("option");
+          opt.value = d.deviceId;
+          opt.textContent = d.label || `Microphone ${idx + 1}`;
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        showAlert("Microphone permission denied. Enable mic in browser settings.");
+      }
+    }
+
+    async function switchMicrophoneDevice() {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
+        showAlert("Stop recording prior to switching hardware devices.");
+        return;
+      }
+      if (audioStream) {
+        audioStream.getTracks().forEach(t => t.stop());
+      }
+      audioStream = null;
+    }
+
+    async function toggleRecording() {
+      if (!mediaRecorder || mediaRecorder.state === "inactive") {
+        startRecording();
+      }
+    }
+
+    async function startRecording() {
+      try {
+        const deviceId = document.getElementById("micSelect").value;
+        const constraints = {
+          audio: {
+            deviceId: deviceId ? { exact: deviceId } : undefined,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+            sampleRate: 48000
+          }
+        };
+
+        audioStream = await navigator.mediaDevices.getUserMedia(constraints);
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const sourceNode = audioContext.createMediaStreamSource(audioStream);
+        analyserNode = audioContext.createAnalyser();
+        analyserNode.fftSize = 256;
+        sourceNode.connect(analyserNode);
+
+        // Codec selection priority
+        let mimeType = "audio/webm;codecs=opus";
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+          mimeType = MediaRecorder.isTypeSupported("audio/ogg;codecs=opus") ? "audio/ogg;codecs=opus" : "audio/mp4";
+        }
+
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(audioStream, { mimeType });
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = async () => {
+          processedBlob = new Blob(recordedChunks, { type: mimeType });
+          const audioUrl = URL.createObjectURL(processedBlob);
+          const previewAudio = document.getElementById("previewAudio");
+          previewAudio.src = audioUrl;
+          document.getElementById("previewBox").style.display = "block";
+          document.getElementById("publishBtn").disabled = false;
+
+          // Compute exact duration
+          const arrayBuffer = await processedBlob.arrayBuffer();
+          const decoded = await audioContext.decodeAudioData(arrayBuffer.slice(0));
+          processedDuration = decoded.duration;
+        };
+
+        mediaRecorder.start(250);
+        recStartTime = Date.now() - recElapsedTime;
+        recTimerId = setInterval(updateRecTimer, 100);
+
+        document.getElementById("recordTrigger").classList.add("recording");
+        document.getElementById("pauseRecBtn").disabled = false;
+        document.getElementById("stopRecBtn").disabled = false;
+        document.getElementById("publishBtn").disabled = true;
+
+        renderScope();
+      } catch (err) {
+        showAlert("Failed to start audio engine: " + err.message);
+      }
+    }
+
+    function pauseRecording() {
+      if (!mediaRecorder) return;
+      if (!isPaused) {
+        mediaRecorder.pause();
+        clearInterval(recTimerId);
+        isPaused = true;
+        document.getElementById("pauseRecBtn").textContent = "RESUME";
+      } else {
+        mediaRecorder.resume();
+        recStartTime = Date.now() - recElapsedTime;
+        recTimerId = setInterval(updateRecTimer, 100);
+        isPaused = false;
+        document.getElementById("pauseRecBtn").textContent = "PAUSE";
+      }
+    }
+
+    function stopRecording() {
+      if (!mediaRecorder) return;
+      mediaRecorder.stop();
+      clearInterval(recTimerId);
+      cancelAnimationFrame(animationFrameId);
+      if (audioStream) {
+        audioStream.getTracks().forEach(t => t.stop());
+      }
+      document.getElementById("recordTrigger").classList.remove("recording");
+      document.getElementById("pauseRecBtn").disabled = true;
+      document.getElementById("stopRecBtn").disabled = true;
+      document.getElementById("meterLevel").style.width = "0%";
+      recElapsedTime = 0;
+    }
+
+    function updateRecTimer() {
+      recElapsedTime = Date.now() - recStartTime;
+      const totalSeconds = Math.floor(recElapsedTime / 1000);
+      const hrs = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+      const mins = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+      const secs = String(totalSeconds % 60).padStart(2, "0");
+      document.getElementById("recTimecode").textContent = `${hrs}:${mins}:${secs}`;
+    }
+
+    function renderScope() {
+      const canvas = document.getElementById("scopeCanvas");
+      const ctx = canvas.getContext("2d");
+      const bufferLength = analyserNode.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function draw() {
+        animationFrameId = requestAnimationFrame(draw);
+        analyserNode.getByteTimeDomainData(dataArray);
+
+        // Peak / RMS Computation
+        let sum = 0;
+        let peak = 0;
+        for (let i = 0; i < bufferLength; i++) {
+          const val = (dataArray[i] - 128) / 128;
+          sum += val * val;
+          if (Math.abs(val) > peak) peak = Math.abs(val);
+        }
+        const rms = Math.sqrt(sum / bufferLength);
+        const meterPct = Math.min(100, Math.round(rms * 250));
+        document.getElementById("meterLevel").style.width = meterPct + "%";
+
+        const clip = document.getElementById("clipIndicator");
+        if (peak > 0.95) {
+          clip.classList.add("clipping");
+          clip.textContent = "PEAK CLIPPING!";
+        } else {
+          clip.classList.remove("clipping");
+          clip.textContent = `${Math.round(peak * 100)}% PEAK`;
+        }
+
+        // Render Waveform Canvas
+        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#00F0FF";
+        ctx.beginPath();
+
+        const sliceWidth = canvas.width / bufferLength;
+        let x = 0;
+
+        for (let i = 0; i < bufferLength; i++) {
+          const v = dataArray[i] / 128.0;
+          const y = (v * canvas.height) / 2;
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+          x += sliceWidth;
+        }
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
+      }
+      draw();
+    }
+
+    // Drag and Drop File Ingest
+    function initAudioDropzone() {
+      const dropzone = document.getElementById("dropArea");
+      ["dragenter", "dragover"].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.add("dragover");
+        });
+      });
+      ["dragleave", "drop"].forEach(name => {
+        dropzone.addEventListener(name, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove("dragover");
+        });
+      });
+      dropzone.addEventListener("drop", (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) processSelectedFile(files[0]);
+      });
+    }
+
+    function handleFileSelect(e) {
+      if (e.target.files.length > 0) processSelectedFile(e.target.files[0]);
+    }
+
+    async function processSelectedFile(file) {
+      if (!file.type.startsWith("audio/")) {
+        showAlert("Unsupported format. Select an audio file.");
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE) {
+        showAlert("File exceeds strict 20MB limit.");
+        return;
+      }
+
+      processedBlob = file;
+      const audioUrl = URL.createObjectURL(file);
+      const previewAudio = document.getElementById("previewAudio");
+      previewAudio.src = audioUrl;
+      document.getElementById("previewBox").style.display = "block";
+      document.getElementById("publishBtn").disabled = false;
+
+      // Calculate Duration
+      const tempAudio = new Audio();
+      tempAudio.src = audioUrl;
+      tempAudio.addEventListener("loadedmetadata", () => {
+        processedDuration = tempAudio.duration;
+      });
+    }
+
+    // Direct-to-Drive Upload Pipeline
+    async function initiateUploadPipeline() {
+      if (!processedBlob) {
+        showAlert("No audio take found to publish.");
+        return;
+      }
+      const titleInput = document.getElementById("trackTitle");
+      const title = titleInput.value.trim() || "Untitled Broadcast";
+
+      const publishBtn = document.getElementById("publishBtn");
+      const progressBox = document.getElementById("uploadProgress");
+      const stageLabel = document.getElementById("stageLabel");
+      const percentLabel = document.getElementById("percentLabel");
+      const progressBar = document.getElementById("progressBar");
+
+      publishBtn.disabled = true;
+      progressBox.style.display = "block";
+
+      function setProgress(stage, pct) {
+        stageLabel.textContent = stage;
+        percentLabel.textContent = pct + "%";
+        progressBar.style.width = pct + "%";
+      }
+
+      try {
+        setProgress("Stage 1/4: Reading ArrayBuffer...", 20);
+        const arrayBuffer = await processedBlob.arrayBuffer();
+
+        setProgress("Stage 2/4: Encoding Base64 Binary Stream...", 45);
+        let binaryString = "";
+        const bytes = new Uint8Array(arrayBuffer);
+        const len = bytes.byteLength;
+        const chunkSize = 0x8000;
+        for (let i = 0; i < len; i += chunkSize) {
+          binaryString += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, len)));
+        }
+        const base64Data = btoa(binaryString);
+
+        setProgress("Stage 3/4: Dispatching Payload to Cloud...", 70);
+        const payload = {
+          action: "uploadAudioTrack",
+          auth: {
+            username: currentUserSession.username,
+            token: currentUserSession.token
+          },
+          metadata: {
+            title: title,
+            fileName: processedBlob.name || "mic_recording.webm",
+            mimeType: processedBlob.type || "audio/webm",
+            durationSeconds: Math.round(processedDuration),
+            sizeBytes: processedBlob.size
+          },
+          fileData: base64Data
+        };
+
+        setProgress("Stage 4/4: Executing Drive FIFO & Sheet Sync...", 90);
+        const response = await executeGasRequest(payload);
+
+        if (response.success) {
+          setProgress("Broadcast Published Successfully!", 100);
+          showAlert("Transmission is live on the broadcast stream!", false);
+          setTimeout(() => {
+            location.reload();
+          }, 2000);
+        } else {
+          showAlert(response.error || "Upload failed on server.");
+          publishBtn.disabled = false;
+        }
+      } catch (err) {
+        showAlert("Upload transmission failure: " + err.message);
+        publishBtn.disabled = false;
+      }
+    }
+
+    // Network Request Wrapper with Exponential Backoff
+    async function executeGasRequest(data, maxRetries = 3) {
+      let delay = 2000;
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          const res = await fetch(GAS_ENDPOINT_URL, {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(data)
+          });
+          return await res.json();
+        } catch (err) {
+          if (attempt === maxRetries) throw err;
+          await new Promise(r => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

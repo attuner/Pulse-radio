@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PULSE RADIO // LIVE STREAM</title>
+  <style>
+    :root {
+      --bg-primary: #090A0F;
+      --bg-card: rgba(22, 27, 34, 0.75);
+      --border-line: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #00F0FF;
+      --accent-violet: #7928CA;
+      --accent-crimson: #FF3B30;
+      --text-main: #F0F6FC;
+      --text-muted: #8B949E;
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-primary);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(121, 40, 202, 0.2) 0%, transparent 60%),
+        radial-gradient(circle at 10% 90%, rgba(0, 240, 255, 0.1) 0%, transparent 40%);
+      color: var(--text-main);
+      font-family: var(--font-ui);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 16px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Header */
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: rgba(255, 59, 48, 0.15);
+      border: 1px solid var(--accent-crimson);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent-crimson);
+      letter-spacing: 1px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-crimson);
+      box-shadow: 0 0 8px var(--accent-crimson);
+      animation: livePulse 1.5s infinite;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .listeners-count {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Turntable / Vinyl Console */
+    .deck-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vinyl {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: repeating-radial-gradient(
+        #111,
+        #111 2px,
+        #181818 3px,
+        #181818 4px
+      );
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 0 4px rgba(255, 255, 255, 0.05);
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .vinyl.spinning {
+      animation: spinRecord 6s linear infinite;
+    }
+
+    @keyframes spinRecord {
+      100% { transform: rotate(360deg); }
+    }
+
+    .vinyl-label {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
+      border: 4px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .center-hole {
+      width: 16px;
+      height: 16px;
+      background: #000;
+      border-radius: 50%;
+    }
+
+    /* Visualizer Canvas */
+    .vis-canvas {
+      width: 100%;
+      height: 120px;
+      margin: 12px 0;
+      border-radius: 8px;
+    }
+
+    /* Metadata Panel */
+    .meta-panel {
+      text-align: center;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .track-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .track-contributor {
+      font-size: 0.9rem;
+      color: var(--accent-cyan);
+      font-family: var(--font-mono);
+      margin-bottom: 4px;
+    }
+
+    .track-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* Progress Display */
+    .live-progress-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .live-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+      transition: width 0.25s linear;
+    }
+
+    /* Master Hardware Controls */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .ctrl-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-line);
+      color: var(--text-main);
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      border-color: var(--accent-cyan);
+      transform: scale(1.05);
+    }
+
+    .ctrl-btn.btn-play {
+      width: 72px;
+      height: 72px;
+      background: var(--accent-cyan);
+      color: #000;
+      border: none;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+
+    .ctrl-btn.btn-play:hover {
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
+      transform: scale(1.06);
+    }
+
+    .ctrl-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .btn-play svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    /* Volume Slider */
+    .volume-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      width: 100%;
+      max-width: 260px;
+    }
+
+    .volume-slider {
+      flex: 1;
+      height: 4px;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--accent-cyan);
+    }
+
+    /* Queue Drawer */
+    .queue-panel {
+      width: 100%;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-line);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .queue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-line);
+    }
+
+    .queue-header h4 {
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+    }
+
+    .queue-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-line);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .queue-item.active {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 240, 255, 0.05);
+    }
+
+    .queue-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .queue-tag {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    .queue-tag.now-playing {
+      background: var(--accent-cyan);
+      color: #000;
+    }
+
+    .queue-tag.up-next {
+      background: var(--accent-violet);
+      color: #FFF;
+    }
+
+    /* Autoplay Gate Overlay */
+    .tune-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 10, 15, 0.96);
+      backdrop-filter: blur(20px);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+
+    .tune-btn {
+      background: linear-gradient(135deg, var(--accent-cyan), #00A3FF);
+      color: #000;
+      border: none;
+      padding: 20px 48px;
+      border-radius: 999px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      cursor: pointer;
+      box-shadow: 0 0 40px rgba(0, 240, 255, 0.5);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .tune-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 60px rgba(0, 240, 255, 0.8);
+    }
+
+    /* Non-blocking Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      background: rgba(22, 27, 34, 0.95);
+      border: 1px solid var(--accent-cyan);
+      color: var(--text-main);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+      transform: translateY(100px);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .toast.visible {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTOPLAY UNLOCK OVERLAY -->
+  <div id="tuneOverlay" class="tune-overlay">
+    <button class="tune-btn" onclick="unlockAudioAndStart()">TUNE IN TO LIVE STREAM</button>
+    <p style="color:var(--text-muted);font-family:var(--font-mono);margin-top:16px;font-size:0.8rem;">
+      AUTHENTICATING SERVERLESS DRIVE AUDIO BUFFER
+    </p>
+  </div>
+
+  <div class="container">
+    <header>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        <span>ON AIR</span>
+      </div>
+      <div class="listeners-count" id="listenerReadout">SYNCHRONIZED // DRIVE BUFFER</div>
+    </header>
+
+    <!-- VINYL TURNTABLE -->
+    <div class="deck-container">
+      <div id="vinylDisk" class="vinyl">
+        <div class="vinyl-label">
+          <div class="center-hole"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPECTRUM VISUALIZER -->
+    <canvas id="visCanvas" class="vis-canvas"></canvas>
+
+    <!-- METADATA READOUT -->
+    <div class="meta-panel">
+      <div id="currentTitle" class="track-title">Connecting to Broadcast Stream...</div>
+      <div id="currentContributor" class="track-contributor">--</div>
+      <div id="currentTimestamp" class="track-time">--:--:--</div>
+    </div>
+
+    <!-- NON-SEEKABLE STREAM PROGRESS BAR -->
+    <div class="live-progress-container">
+      <div id="streamProgressBar" class="live-progress-bar"></div>
+    </div>
+
+    <!-- HARDWARE PLAYBACK CONTROLS -->
+    <div class="controls">
+      <button class="ctrl-btn" onclick="skipToPreviousTrack()" title="Previous Transmission">
+        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+
+      <button id="masterPlayBtn" class="ctrl-btn btn-play" onclick="togglePlayback()" title="Play / Pause">
+        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+
+      <button class="ctrl-btn" onclick="skipToNextTrack()" title="Next Transmission">
+        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+      </button>
+    </div>
+
+    <!-- VOLUME HARDWARE GAIN -->
+    <div class="volume-group">
+      <svg style="width:18px;height:18px;fill:var(--text-muted);" viewBox="0 0 24 24">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+      </svg>
+      <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.85" oninput="handleVolumeChange(event)">
+    </div>
+
+    <!-- LIVE BUFFER QUEUE DRAWER -->
+    <div class="queue-panel">
+      <div class="queue-header">
+        <h4>Active Transmission Buffer (FIFO Queue)</h4>
+        <span id="queueCount" style="font-family:var(--font-mono);font-size:0.8rem;color:var(--text-muted);">0 Tracks</span>
+      </div>
+      <ul id="queueList" class="queue-list"></ul>
+    </div>
+  </div>
+
+  <div id="toastNotification" class="toast"></div>
+
+  <!-- PERSISTENT BACKGROUND AUDIO ELEMENT -->
+  <audio id="radioAudio" playsinline webkit-playsinline preload="auto"></audio>
+
+  <script>
+    /**
+     * ENDPOINT CONFIGURATION: Paste your deployed Google Apps Script URL below
+     */
+    const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
+    const POLL_INTERVAL = 20000; // Poll Google Drive manifest every 20 seconds
+
+    // Audio Engine State
+    let audioCtx = null;
+    let analyser = null;
+    let audioSource = null;
+    let isUnlocked = false;
+    let isPlaying = false;
+    let currentTrackIndex = 0;
+    let animationFrame = null;
+
+    // Queue Buffers
+    let currentQueue = [];
+    let priorityQueue = [];
+    let pollTimerId = null;
+
+    const audioElement = document.getElementById("radioAudio");
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initAudioElementListeners();
+      initVisibilityChangeHandler();
+    });
+
+    // Display Non-blocking Notification Toast
+    function showToast(message) {
+      const toast = document.getElementById("toastNotification");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => { toast.classList.remove("visible"); }, 4000);
+    }
+
+    // Autoplay Unlock Handler
+    async function unlockAudioAndStart() {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") {
+          await audioCtx.resume();
+        }
+
+        // Setup Audio Analyser
+        try {
+          audioSource = audioCtx.createMediaElementSource(audioElement);
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = 256;
+          analyser.smoothingTimeConstant = 0.85;
+          audioSource.connect(analyser);
+          analyser.connect(audioCtx.destination);
+          renderVisualizer();
+        } catch (e) {
+          console.warn("CORS limitation on MediaElementSource, visualizer in fallback mode.");
+        }
+
+        const overlay = document.getElementById("tuneOverlay");
+        overlay.style.opacity = "0";
+        setTimeout(() => { overlay.style.display = "none"; }, 500);
+
+        isUnlocked = true;
+        await fetchLiveManifest();
+        pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
+      } catch (err) {
+        console.error("Audio unlock failed: ", err);
+      }
+    }
+
+    // Media Event Listeners
+    function initAudioElementListeners() {
+      // Background Tab Safe Progression: Native Events
+      audioElement.addEventListener("ended", handleTrackEnded);
+      
+      audioElement.addEventListener("timeupdate", () => {
+        if (!audioElement.duration) return;
+        const progress = (audioElement.currentTime / audioElement.duration) * 100;
+        document.getElementById("streamProgressBar").style.width = progress + "%";
+        
+        const curSec = Math.floor(audioElement.currentTime);
+        const durSec = Math.floor(audioElement.duration);
+        document.getElementById("currentTimestamp").textContent = 
+          `${formatTime(curSec)} /${formatTime(durSec)}`;
+      });
+
+      audioElement.addEventListener("error", (e) => {
+        console.warn("Drive direct stream failure. Auto-recovering to next track...", e);
+        showToast("Skipped unplayable buffer item. Advancing...");
+        setTimeout(skipToNextTrack, 1500);
+      });
+
+      audioElement.addEventListener("play", () => {
+        isPlaying = true;
+        updatePlayStateUI();
+      });
+
+      audioElement.addEventListener("pause", () => {
+        isPlaying = false;
+        updatePlayStateUI();
+      });
+    }
+
+    // Media Session API Sync
+    function syncMediaSession(track) {
+      if ("mediaSession" in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: track.title || track.fileName,
+          artist: "Contributor: " + (track.uploaderName || "Anonymous"),
+          album: "Pulse Radio // Live Drive Buffer",
+          artwork: [
+            { src: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=512&q=80", sizes: "512x512", type: "image/jpeg" }
+          ]
+        });
+
+        navigator.mediaSession.setActionHandler("play", () => togglePlayback());
+        navigator.mediaSession.setActionHandler("pause", () => togglePlayback());
+        navigator.mediaSession.setActionHandler("nexttrack", () => skipToNextTrack());
+        navigator.mediaSession.setActionHandler("previoustrack", () => skipToPreviousTrack());
+      }
+    }
+
+    // Manifest Polling & Queue Synchronization
+    async function fetchLiveManifest() {
+      try {
+        const res = await fetch(`${GAS_ENDPOINT_URL}?action=getLiveManifest`, {
+          method: "GET",
+          mode: "cors"
+        });
+        const json = await res.json();
+
+        if (json.success && json.data.manifest) {
+          reconcileIncomingManifest(json.data.manifest);
+        }
+      } catch (err) {
+        console.warn("Background manifest poll failed. Will retry.", err);
+      }
+    }
+
+    // Manifest Diffing & Urgent Queue Insertion
+    function reconcileIncomingManifest(incomingTracks) {
+      if (incomingTracks.length === 0) {
+        document.getElementById("currentTitle").textContent = "Station Idle: No active broadcasts found.";
+        return;
+      }
+
+      if (currentQueue.length === 0) {
+        // Initial Start: Play newest uploaded track (Track 0)
+        currentQueue = incomingTracks;
+        currentTrackIndex = 0;
+        loadAndPlayTrack(currentQueue[0]);
+        renderQueueList();
+        return;
+      }
+
+      // Check for mid-stream arrivals
+      const existingIds = new Set(currentQueue.map(t => t.contentId));
+      const newlyAddedTracks = incomingTracks.filter(t => !existingIds.has(t.contentId));
+
+      if (newlyAddedTracks.length > 0) {
+        // Found new tracks while playing! Add to priority queue
+        newlyAddedTracks.forEach(newTrack => {
+          priorityQueue.push(newTrack);
+        });
+        showToast("New transmission received! Up next immediately after current track.");
+      }
+
+      // Update current queue while preserving the active track's identity
+      const activeContentId = currentQueue[currentTrackIndex]?.contentId;
+      currentQueue = incomingTracks;
+
+      const newIndex = currentQueue.findIndex(t => t.contentId === activeContentId);
+      if (newIndex !== -1) {
+        currentTrackIndex = newIndex;
+      }
+
+      renderQueueList();
+    }
+
+    // Track Progression Logic
+    function handleTrackEnded() {
+      if (priorityQueue.length > 0) {
+        // Priority Track Dequeue (Rule 2)
+        const nextUrgentTrack = priorityQueue.shift();
+        const foundIdx = currentQueue.findIndex(t => t.contentId === nextUrgentTrack.contentId);
+        if (foundIdx !== -1) {
+          currentTrackIndex = foundIdx;
+        }
+        loadAndPlayTrack(nextUrgentTrack);
+      } else {
+        // Sequential Looping (Rule 3)
+        currentTrackIndex++;
+        if (currentTrackIndex >= currentQueue.length) {
+          currentTrackIndex = 0; // Seamless loop back to top
+        }
+        loadAndPlayTrack(currentQueue[currentTrackIndex]);
+      }
+      renderQueueList();
+    }
+
+    function loadAndPlayTrack(track) {
+      if (!track) return;
+      
+      audioElement.src = track.playbackDirectUrl;
+      audioElement.load();
+      
+      const playPromise = audioElement.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.warn("Autoplay block or network error on track: ", error);
+        });
+      }
+
+      // Update UI Readout
+      document.getElementById("currentTitle").textContent = track.title || track.fileName;
+      document.getElementById("currentContributor").textContent = `BROADCAST BY @${track.uploaderUsername} (${track.uploaderName})`;
+      
+      syncMediaSession(track);
+      renderQueueList();
+    }
+
+    function togglePlayback() {
+      if (!isUnlocked) {
+        unlockAudioAndStart();
+        return;
+      }
+      if (audioElement.paused) {
+        audioElement.play();
+      } else {
+        audioElement.pause();
+      }
+    }
+
+    function skipToNextTrack() {
+      handleTrackEnded();
+    }
+
+    function skipToPreviousTrack() {
+      if (currentQueue.length === 0) return;
+      currentTrackIndex--;
+      if (currentTrackIndex < 0) currentTrackIndex = currentQueue.length - 1;
+      loadAndPlayTrack(currentQueue[currentTrackIndex]);
+    }
+
+    function handleVolumeChange(e) {
+      audioElement.volume = parseFloat(e.target.value);
+    }
+
+    function updatePlayStateUI() {
+      const disk = document.getElementById("vinylDisk");
+      const playIcon = document.getElementById("playIcon");
+
+      if (isPlaying) {
+        disk.classList.add("spinning");
+        playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+      } else {
+        disk.classList.remove("spinning");
+        playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+      }
+    }
+
+    // Queue UI Drawer Rendering
+    function renderQueueList() {
+      const list = document.getElementById("queueList");
+      list.innerHTML = "";
+      document.getElementById("queueCount").textContent = `${currentQueue.length} Active Slots`;
+
+      currentQueue.forEach((track, index) => {
+        const item = document.createElement("li");
+        const isActive = index === currentTrackIndex;
+        item.className = isActive ? "queue-item active" : "queue-item";
+
+        let badgeHtml = "";
+        if (isActive) {
+          badgeHtml = '<span class="queue-tag now-playing">ON AIR</span>';
+        } else if (index === (currentTrackIndex + 1) % currentQueue.length) {
+          badgeHtml = '<span class="queue-tag up-next">UP NEXT</span>';
+        }
+
+        const dateFormatted = new Date(track.uploadTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        item.innerHTML = `
+          <div class="queue-left">
+            ${badgeHtml}
+            <div>
+              <div style="font-weight:600;">${track.title || track.fileName}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">@${track.uploaderUsername} &bull; ${dateFormatted}</div>
+            </div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);">
+            ${formatTime(track.durationSeconds || 0)}
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    // Web Audio Canvas Visualizer
+    function renderVisualizer() {
+      const canvas = document.getElementById("visCanvas");
+      const ctx = canvas.getContext("2d");
+      
+      // Retina Screen DPI Setup
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.clientWidth * dpr;
+      canvas.height = canvas.clientHeight * dpr;
+      ctx.scale(dpr, dpr);
+
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+
+      function draw() {
+        animationFrame = requestAnimationFrame(draw);
+        if (document.hidden) return; // Preserve battery in background
+
+        analyser.getByteFrequencyData(dataArray);
+
+        ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+
+        const barCount = 48;
+        const barWidth = (canvas.clientWidth / barCount) - 2;
+        let x = 0;
+
+        for (let i = 0; i < barCount; i++) {
+          const barHeight = (dataArray[i * 2] / 255) * canvas.clientHeight * 0.9;
+          
+          const gradient = ctx.createLinearGradient(0, canvas.clientHeight, 0, 0);
+          gradient.addColorStop(0, "#7928CA");
+          gradient.addColorStop(1, "#00F0FF");
+
+          ctx.fillStyle = gradient;
+          ctx.fillRect(x, canvas.clientHeight - barHeight, barWidth, barHeight);
+
+          x += barWidth + 2;
+        }
+      }
+      draw();
+    }
+
+    // Battery Preservation Handler
+    function initVisibilityChangeHandler() {
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          if (animationFrame) cancelAnimationFrame(animationFrame);
+        } else {
+          if (analyser) renderVisualizer();
+        }
+      });
+    }
+
+    // Helper: Seconds to MM:SS
+    function formatTime(seconds) {
+      const s = parseInt(seconds, 10) || 0;
+      const mins = Math.floor(s / 60);
+      const secs = s % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+  </script>
+</body>
+</html>
