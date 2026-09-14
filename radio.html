@@ -507,6 +507,8 @@
     let isPlaying = false;
     let currentTrackIndex = 0;
     let animationFrame = null;
+    let currentBlobUrl = null; // Track and revoke object URLs to prevent leaks
+    let isTrackLoading = false;
 
     // Queue Buffers
     let currentQueue = [];
@@ -546,7 +548,7 @@
           analyser.connect(audioCtx.destination);
           renderVisualizer();
         } catch (e) {
-          console.warn("CORS limitation on MediaElementSource, visualizer in fallback mode.");
+          console.warn("MediaElementSource connection note: Visualizer in fallback mode.");
         }
 
         const overlay = document.getElementById("tuneOverlay");
@@ -563,7 +565,6 @@
 
     // Media Event Listeners
     function initAudioElementListeners() {
-      // Background Tab Safe Progression: Native Events
       audioElement.addEventListener("ended", handleTrackEnded);
       
       audioElement.addEventListener("timeupdate", () => {
@@ -574,12 +575,23 @@
         const curSec = Math.floor(audioElement.currentTime);
         const durSec = Math.floor(audioElement.duration);
         document.getElementById("currentTimestamp").textContent = 
-          `${formatTime(curSec)} /${formatTime(durSec)}`;
+          `${formatTime(curSec)} / ${formatTime(durSec)}`;
       });
 
       audioElement.addEventListener("error", (e) => {
-        console.warn("Drive direct stream failure. Auto-recovering to next track...", e);
-        showToast("Skipped unplayable buffer item. Advancing...");
+        const err = audioElement.error;
+        let details = "Unknown Media Error";
+        if (err) {
+          switch (err.code) {
+            case MediaError.MEDIA_ERR_ABORTED: details = "Playback aborted"; break;
+            case MediaError.MEDIA_ERR_NETWORK: details = "Network error downloading audio"; break;
+            case MediaError.MEDIA_ERR_DECODE: details = "Audio decode corrupted/unsupported"; break;
+            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: details = "Audio source format not supported"; break;
+          }
+          if (err.message) details += " - " + err.message;
+        }
+        console.error("Audio playback failure:", details, e);
+        showToast(`Skipped track (${details}). Advancing...`);
         setTimeout(skipToNextTrack, 1500);
       });
 
@@ -638,7 +650,6 @@
       }
 
       if (currentQueue.length === 0) {
-        // Initial Start: Play newest uploaded track (Track 0)
         currentQueue = incomingTracks;
         currentTrackIndex = 0;
         loadAndPlayTrack(currentQueue[0]);
@@ -651,14 +662,12 @@
       const newlyAddedTracks = incomingTracks.filter(t => !existingIds.has(t.contentId));
 
       if (newlyAddedTracks.length > 0) {
-        // Found new tracks while playing! Add to priority queue
         newlyAddedTracks.forEach(newTrack => {
           priorityQueue.push(newTrack);
         });
         showToast("New transmission received! Up next immediately after current track.");
       }
 
-      // Update current queue while preserving the active track's identity
       const activeContentId = currentQueue[currentTrackIndex]?.contentId;
       currentQueue = incomingTracks;
 
@@ -673,7 +682,6 @@
     // Track Progression Logic
     function handleTrackEnded() {
       if (priorityQueue.length > 0) {
-        // Priority Track Dequeue (Rule 2)
         const nextUrgentTrack = priorityQueue.shift();
         const foundIdx = currentQueue.findIndex(t => t.contentId === nextUrgentTrack.contentId);
         if (foundIdx !== -1) {
@@ -681,35 +689,73 @@
         }
         loadAndPlayTrack(nextUrgentTrack);
       } else {
-        // Sequential Looping (Rule 3)
         currentTrackIndex++;
         if (currentTrackIndex >= currentQueue.length) {
-          currentTrackIndex = 0; // Seamless loop back to top
+          currentTrackIndex = 0;
         }
         loadAndPlayTrack(currentQueue[currentTrackIndex]);
       }
       renderQueueList();
     }
 
-    function loadAndPlayTrack(track) {
-      if (!track) return;
-      
-      audioElement.src = track.playbackDirectUrl;
-      audioElement.load();
-      
-      const playPromise = audioElement.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.warn("Autoplay block or network error on track: ", error);
-        });
-      }
+    // PROXIED AUDIO FETCH, BLOB CONVERSION & STREAMING
+    async function loadAndPlayTrack(track) {
+      if (!track || isTrackLoading) return;
+      isTrackLoading = true;
 
-      // Update UI Readout
-      document.getElementById("currentTitle").textContent = track.title || track.fileName;
+      // Update UI to buffering state
+      document.getElementById("currentTitle").textContent = "Buffering: " + (track.title || track.fileName);
       document.getElementById("currentContributor").textContent = `BROADCAST BY @${track.uploaderUsername} (${track.uploaderName})`;
-      
-      syncMediaSession(track);
-      renderQueueList();
+
+      try {
+        // Fetch raw binary payload through Apps Script proxy
+        const streamUrl = `${GAS_ENDPOINT_URL}?action=streamAudio&fileId=${encodeURIComponent(track.fileId)}`;
+        const res = await fetch(streamUrl, {
+          method: "GET",
+          mode: "cors"
+        });
+        const json = await res.json();
+
+        if (!json.success || !json.base64) {
+          throw new Error(json.error || "Backend stream returned invalid payload");
+        }
+
+        // Decode Base64 to Binary TypedArray
+        const byteCharacters = atob(json.base64);
+        const byteNumbers = new Uint8Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+
+        // Construct in-memory Blob and create local object URL
+        const audioBlob = new Blob([byteNumbers], { type: json.mimeType || track.mimeType || "audio/webm" });
+
+        // Revoke old URL to free memory
+        if (currentBlobUrl) {
+          URL.revokeObjectURL(currentBlobUrl);
+        }
+
+        currentBlobUrl = URL.createObjectURL(audioBlob);
+        audioElement.src = currentBlobUrl;
+        audioElement.load();
+
+        const playPromise = audioElement.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.warn("Autoplay block or playback interruption: ", error);
+          });
+        }
+
+        document.getElementById("currentTitle").textContent = track.title || track.fileName;
+        syncMediaSession(track);
+        renderQueueList();
+      } catch (err) {
+        console.error("Failed to stream audio via proxy:", err);
+        showToast("Error buffering track: " + err.message);
+        setTimeout(skipToNextTrack, 1500);
+      } finally {
+        isTrackLoading = false;
+      }
     }
 
     function togglePlayback() {
@@ -793,7 +839,6 @@
       const canvas = document.getElementById("visCanvas");
       const ctx = canvas.getContext("2d");
       
-      // Retina Screen DPI Setup
       const dpr = window.devicePixelRatio || 1;
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
@@ -804,7 +849,7 @@
 
       function draw() {
         animationFrame = requestAnimationFrame(draw);
-        if (document.hidden) return; // Preserve battery in background
+        if (document.hidden) return;
 
         analyser.getByteFrequencyData(dataArray);
 
