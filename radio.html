@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PULSE RADIO // LIVE STREAM</title>
 
-  <!-- PWA & Cross-Platform Display Capabilities -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pulse Radio">
@@ -45,71 +44,21 @@
       overflow-x: hidden;
     }
 
-    .container {
-      width: 100%;
-      max-width: 780px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .unmute-pill {
-      position: fixed;
-      top: calc(16px + env(safe-area-inset-top, 0px));
-      background: rgba(0, 240, 255, 0.95);
-      color: #000;
-      padding: 10px 22px;
-      border-radius: 999px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      font-family: var(--font-mono);
-      letter-spacing: 0.5px;
-      box-shadow: 0 4px 24px rgba(0, 240, 255, 0.5);
-      cursor: pointer;
-      z-index: 10000;
-      display: none;
-      align-items: center;
-      gap: 8px;
-      min-height: 48px;
-      animation: pillFloat 2s ease-in-out infinite;
-    }
-
-    @keyframes pillFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
+    .container { width: 100%; max-width: 780px; display: flex; flex-direction: column; align-items: center; }
 
     header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
+      width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
     }
 
     .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      background: rgba(255, 59, 48, 0.15);
-      border: 1px solid var(--accent-crimson);
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--accent-crimson);
-      letter-spacing: 1px;
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+      background: rgba(255, 59, 48, 0.15); border: 1px solid var(--accent-crimson);
+      border-radius: 999px; font-family: var(--font-mono); font-size: 0.75rem;
+      font-weight: 700; color: var(--accent-crimson); letter-spacing: 1px;
     }
 
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--accent-crimson);
-      box-shadow: 0 0 8px var(--accent-crimson);
-      animation: livePulse 1.5s infinite;
-    }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-crimson); box-shadow: 0 0 8px var(--accent-crimson); }
+    .live-dot.active { animation: livePulse 1.5s infinite; }
 
     @keyframes livePulse {
       0%, 100% { opacity: 1; }
@@ -117,304 +66,116 @@
     }
 
     .listeners-count {
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: var(--accent-cyan);
-      font-weight: 600;
-      letter-spacing: 0.5px;
+      font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent-cyan);
+      font-weight: 600; letter-spacing: 0.5px;
     }
 
     .deck-container {
-      position: relative;
-      width: clamp(220px, 45vw, 280px);
-      height: clamp(220px, 45vw, 280px);
-      margin: 16px 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: relative; width: clamp(220px, 45vw, 280px); height: clamp(220px, 45vw, 280px);
+      margin: 16px 0; display: flex; align-items: center; justify-content: center;
     }
 
     .vinyl {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      background: repeating-radial-gradient(
-        #111,
-        #111 2px,
-        #181818 3px,
-        #181818 4px
-      );
+      width: 100%; height: 100%; border-radius: 50%;
+      background: repeating-radial-gradient(#111, #111 2px, #181818 3px, #181818 4px);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 0 4px rgba(255, 255, 255, 0.05);
-      position: absolute;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: absolute; display: flex; align-items: center; justify-content: center;
       transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .vinyl.spinning {
-      animation: spinRecord 6s linear infinite;
-    }
-
-    @keyframes spinRecord {
-      100% { transform: rotate(360deg); }
-    }
+    .vinyl.spinning { animation: spinRecord 6s linear infinite; }
+    @keyframes spinRecord { 100% { transform: rotate(360deg); } }
 
     .vinyl-label {
-      width: 36%;
-      height: 36%;
-      border-radius: 50%;
+      width: 36%; height: 36%; border-radius: 50%;
       background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
-      border: 4px solid #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border: 4px solid #000; display: flex; align-items: center; justify-content: center;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
     }
 
-    .center-hole {
-      width: 16px;
-      height: 16px;
-      background: #000;
-      border-radius: 50%;
-    }
+    .center-hole { width: 16px; height: 16px; background: #000; border-radius: 50%; }
 
-    .vis-canvas {
-      width: 100%;
-      height: 110px;
-      margin: 12px 0;
-      border-radius: 8px;
-    }
+    .vis-canvas { width: 100%; height: 100px; margin: 12px 0; border-radius: 8px; }
 
-    .meta-panel {
-      text-align: center;
-      margin-bottom: 20px;
-      width: 100%;
-    }
+    .meta-panel { text-align: center; margin-bottom: 20px; width: 100%; }
+    .track-title { font-size: clamp(1.15rem, 3.5vw, 1.45rem); font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px; color: var(--text-main); }
+    .track-contributor { font-size: 0.9rem; color: var(--accent-cyan); font-family: var(--font-mono); margin-bottom: 4px; }
+    .track-time { font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono); }
 
-    .track-title {
-      font-size: clamp(1.15rem, 3.5vw, 1.45rem);
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-      color: var(--text-main);
-    }
+    .live-progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; margin-bottom: 24px; cursor: pointer; }
+    .live-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan)); transition: width 0.25s linear; }
 
-    .track-contributor {
-      font-size: 0.9rem;
-      color: var(--accent-cyan);
-      font-family: var(--font-mono);
-      margin-bottom: 4px;
-    }
-
-    .track-time {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
-
-    .live-progress-container {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 3px;
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
-
-    .live-progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
-      transition: width 0.25s linear;
-    }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: clamp(16px, 4vw, 24px);
-      margin-bottom: 28px;
-    }
-
+    .controls { display: flex; align-items: center; justify-content: center; gap: clamp(16px, 4vw, 24px); margin-bottom: 28px; }
     .ctrl-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border-line);
-      color: var(--text-main);
-      width: 56px;
-      height: 56px;
-      min-width: 48px;
-      min-height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
+      background: var(--bg-card); border: 1px solid var(--border-line); color: var(--text-main);
+      width: 56px; height: 56px; min-width: 48px; min-height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;
     }
-
-    .ctrl-btn:hover {
-      border-color: var(--accent-cyan);
-      transform: scale(1.05);
-    }
+    .ctrl-btn:hover { border-color: var(--accent-cyan); transform: scale(1.05); }
 
     .ctrl-btn.btn-play {
-      width: 76px;
-      height: 76px;
-      background: var(--accent-cyan);
-      color: #000;
-      border: none;
+      width: 76px; height: 76px; background: var(--accent-cyan); color: #000; border: none;
       box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
     }
+    .ctrl-btn.btn-play:hover { box-shadow: 0 0 30px rgba(0, 240, 255, 0.6); transform: scale(1.06); }
 
-    .ctrl-btn.btn-play:hover {
-      box-shadow: 0 0 30px rgba(0, 240, 255, 0.6);
-      transform: scale(1.06);
-    }
+    .ctrl-btn svg { width: 24px; height: 24px; fill: currentColor; }
+    .btn-play svg { width: 32px; height: 32px; }
 
-    .ctrl-btn svg {
-      width: 24px;
-      height: 24px;
-      fill: currentColor;
-    }
-
-    .btn-play svg {
-      width: 32px;
-      height: 32px;
-    }
-
-    /* Spatial D-Pad High-Visibility Focus Outline */
-    button:focus-visible,
-    input:focus-visible,
-    .unmute-pill:focus-visible {
+    button:focus-visible, input:focus-visible {
       outline: 3px solid var(--accent-cyan) !important;
       outline-offset: 4px !important;
     }
 
-    .volume-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 28px;
-      width: 100%;
-      max-width: 280px;
-    }
-
+    .volume-group { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; width: 100%; max-width: 280px; }
     .volume-slider {
-      flex: 1;
-      height: 6px;
-      -webkit-appearance: none;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 3px;
-      outline: none;
+      flex: 1; height: 6px; -webkit-appearance: none; background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px; outline: none;
     }
-
     .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--accent-cyan);
-      cursor: pointer;
-      box-shadow: 0 0 8px var(--accent-cyan);
+      -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent-cyan); cursor: pointer; box-shadow: 0 0 8px var(--accent-cyan);
     }
 
     .queue-panel {
-      width: 100%;
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid var(--border-line);
-      border-radius: 16px;
-      padding: clamp(16px, 3vw, 24px);
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      width: 100%; background: var(--bg-card); backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-line);
+      border-radius: 16px; padding: clamp(16px, 3vw, 24px); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     }
 
     .queue-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 14px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid var(--border-line);
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--border-line);
     }
 
-    .queue-header h4 {
-      font-size: 0.85rem;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-    }
-
-    .queue-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .queue-header h4 { font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono); color: var(--text-muted); }
+    .queue-list { list-style: none; display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; }
 
     .queue-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border-line);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-line); border-radius: 8px; font-size: 0.85rem;
     }
 
-    .queue-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .queue-tag {
-      font-size: 0.65rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: var(--font-mono);
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-muted);
-    }
+    .queue-left { display: flex; align-items: center; gap: 12px; }
+    .queue-tag { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-weight: 700; background: rgba(255, 255, 255, 0.1); color: var(--text-muted); }
 
     .toast {
-      position: fixed;
-      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-      background: rgba(22, 27, 34, 0.96);
-      border: 1px solid var(--accent-cyan);
-      color: var(--text-main);
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      font-family: var(--font-mono);
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-      transform: translateY(120px);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-      max-width: 90vw;
+      position: fixed; bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      background: rgba(22, 27, 34, 0.96); border: 1px solid var(--accent-cyan); color: var(--text-main);
+      padding: 12px 24px; border-radius: 8px; font-size: 0.85rem; font-family: var(--font-mono);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7); transform: translateY(120px); transition: transform 0.3s ease;
+      z-index: 1000; max-width: 90vw;
     }
-
-    .toast.visible {
-      transform: translateY(0);
-    }
+    .toast.visible { transform: translateY(0); }
   </style>
 </head>
 <body>
 
-  <div id="unmutePill" class="unmute-pill" tabindex="0" role="button" onclick="handleUserUnlockInteraction()" onkeydown="if(event.key==='Enter'||event.key===' ')handleUserUnlockInteraction()">
-    <span>🔊 TAP ANYWHERE TO UNMUTE</span>
-  </div>
-
   <div class="container">
     <header>
       <div class="live-badge">
-        <span class="live-dot"></span>
-        <span>ON AIR</span>
+        <span id="liveDot" class="live-dot"></span>
+        <span id="liveStatusText">STANDBY</span>
       </div>
       <div class="listeners-count" id="listenerReadout">LISTENERS: 1 ACTIVE</div>
     </header>
@@ -431,21 +192,20 @@
 
     <div class="meta-panel">
       <div id="currentTitle" class="track-title">Connecting to Broadcast Buffer...</div>
-      <div id="currentContributor" class="track-contributor">--</div>
-      <div id="currentTimestamp" class="track-time">--:--:--</div>
+      <div id="currentContributor" class="track-contributor">Press Play / Tune In to Listen</div>
+      <div id="currentTimestamp" class="track-time">--:-- / --:--</div>
     </div>
 
-    <div class="live-progress-container">
+    <div class="live-progress-container" id="progressBarContainer">
       <div id="streamProgressBar" class="live-progress-bar"></div>
     </div>
 
-    <!-- PREVIOUS, PLAY/PAUSE, NEXT HARDWARE CONTROLS -->
     <div class="controls">
       <button class="ctrl-btn" onclick="skipToPreviousTrack()" title="Previous Transmission" aria-label="Previous Track">
         <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
       </button>
 
-      <button id="masterPlayBtn" class="ctrl-btn btn-play" onclick="togglePlayback()" title="Play / Pause" aria-label="Play or Pause">
+      <button id="masterPlayBtn" class="ctrl-btn btn-play" onclick="togglePlayback()" title="Tune In / Play" aria-label="Play or Pause">
         <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </button>
 
@@ -461,7 +221,6 @@
       <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.80" aria-label="Volume Slider" oninput="handleVolumeChange(event)">
     </div>
 
-    <!-- RECENTLY PLAYED HISTORY DRAWER (LAST 3 TRACKS ONLY) -->
     <div class="queue-panel">
       <div class="queue-header">
         <h4>Recently Played (Last 3 Tracks)</h4>
@@ -473,41 +232,34 @@
 
   <div id="toastNotification" class="toast"></div>
 
-  <!-- NATIVE DIRECT HARDWARE AUDIO ELEMENT -->
-  <audio id="radioAudio" playsinline webkit-playsinline preload="auto"></audio>
+  <audio id="radioAudio" playsinline webkit-playsinline preload="auto" crossorigin="anonymous"></audio>
 
   <script>
-    /**
-     * ENDPOINT CONFIGURATION: Paste your deployed Google Apps Script URL below
-     */
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
     const POLL_INTERVAL = 15000;
 
-    // Detect Smart TV Environment
     const isTV = /SmartTV|Tizen|Web0S|BRAVIA|Android TV|CrKey|Roku|FireTV|AFTB|Hisense/i.test(navigator.userAgent);
 
-    // Audio Engine State
     let audioCtx = null;
     let analyser = null;
     let audioSource = null;
-    let audioCtxInitialized = false;
+    let masterGain = null;
+    let isAudioGraphSetup = false;
     let isPlaying = false;
     let currentTrackIndex = 0;
     let animationFrame = null;
     let currentBlobUrl = null;
     let isTrackLoading = false;
     let activeFetchAbortController = null;
-    let userBaseVolume = 0.80; // Safe ceiling to avoid Smart TV DAC clipping
+    let userBaseVolume = 0.80;
     let cachedManifestEtag = null;
 
-    // Ephemeral Client Listener Session ID
     let listenerSessionId = localStorage.getItem("PULSE_RADIO_LISTENER_ID");
     if (!listenerSessionId) {
       listenerSessionId = "lstnr_" + Math.random().toString(36).substring(2, 12);
       localStorage.setItem("PULSE_RADIO_LISTENER_ID", listenerSessionId);
     }
 
-    // Queues & History
     let currentQueue = [];
     let priorityQueue = [];
     let recentlyPlayedHistory = [];
@@ -518,9 +270,9 @@
     window.addEventListener("DOMContentLoaded", () => {
       initAudioElementListeners();
       initVisibilityChangeHandler();
-      setupGlobalAutoplayUnlockListener();
+      initProgressBarSeek();
+      initRemoteDpadKeys();
 
-      // On TVs, hide canvas immediately to preserve CPU
       if (isTV) {
         const c = document.getElementById("visCanvas");
         if (c) c.style.display = "none";
@@ -538,63 +290,43 @@
     }
 
     /**
-     * Lazy Safari/WebKit AudioContext Lifecycle Manager
+     * Complete Web Audio Pipeline: audioSource -> analyser -> masterGain -> destination
      */
-    function ensureAudioContextReady() {
-      if (!audioCtxInitialized) {
-        try {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-          // Isolate frequency analysis from acoustic output
-          if (!isTV && !audioSource) {
-            try {
-              audioSource = audioCtx.createMediaElementSource(audioElement);
-              analyser = audioCtx.createAnalyser();
-              analyser.fftSize = 256;
-              analyser.smoothingTimeConstant = 0.85;
-
-              // Connect to analyser ONLY - DO NOT connect to audioCtx.destination
-              // This guarantees zero WebKit muting bugs and zero Smart TV sample-rate distortion
-              audioSource.connect(analyser);
-              renderVisualizer();
-            } catch (dspErr) {
-              console.warn("Visualizer fallback mode active:", dspErr);
-            }
-          }
-          audioCtxInitialized = true;
-        } catch (e) {
-          console.warn("AudioContext initialization deferred:", e);
+    function setupAudioPipeline() {
+      if (isAudioGraphSetup) {
+        if (audioCtx && audioCtx.state === "suspended") {
+          audioCtx.resume().catch(() => {});
         }
+        return;
       }
 
-      if (audioCtx && audioCtx.state === "suspended") {
-        audioCtx.resume().catch(e => console.warn("Context resume deferred:", e));
-      }
-    }
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
 
-    function setupGlobalAutoplayUnlockListener() {
-      const unlockEvents = ["click", "touchstart", "keydown"];
-      const unlocker = () => {
-        handleUserUnlockInteraction();
-        unlockEvents.forEach(evt => document.removeEventListener(evt, unlocker));
-      };
-      unlockEvents.forEach(evt => document.addEventListener(evt, unlocker));
-    }
+        audioCtx = new AudioContextClass();
+        masterGain = audioCtx.createGain();
+        masterGain.gain.setValueAtTime(userBaseVolume, audioCtx.currentTime);
 
-    function handleUserUnlockInteraction() {
-      const pill = document.getElementById("unmutePill");
-      pill.style.display = "none";
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.85;
 
-      ensureAudioContextReady();
-      audioElement.muted = false;
-      audioElement.volume = userBaseVolume;
+        audioSource = audioCtx.createMediaElementSource(audioElement);
 
-      if (audioElement.paused && currentQueue.length > 0) {
-        audioElement.play().catch(err => {
-          if (err.name !== "AbortError") {
-            console.warn("Unlock play attempt notice:", err);
-          }
-        });
+        audioSource.connect(analyser);
+        analyser.connect(masterGain);
+        masterGain.connect(audioCtx.destination);
+
+        isAudioGraphSetup = true;
+
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume().catch(() => {});
+        }
+
+        if (!isTV) renderVisualizer();
+      } catch (err) {
+        console.warn("Direct hardware fallback active:", err);
       }
     }
 
@@ -602,7 +334,7 @@
       audioElement.addEventListener("ended", handleTrackEnded);
 
       audioElement.addEventListener("timeupdate", () => {
-        if (!audioElement.duration) return;
+        if (!audioElement.duration || !isFinite(audioElement.duration)) return;
         const progress = (audioElement.currentTime / audioElement.duration) * 100;
         document.getElementById("streamProgressBar").style.width = progress + "%";
 
@@ -612,22 +344,15 @@
           `${formatTime(curSec)} / ${formatTime(durSec)}`;
       });
 
-      audioElement.addEventListener("error", () => {
+      audioElement.addEventListener("error", (e) => {
         const err = audioElement.error;
-        let details = "Media Error";
-        if (err) {
-          switch (err.code) {
-            case MediaError.MEDIA_ERR_ABORTED: return; // Expected on skip
-            case MediaError.MEDIA_ERR_NETWORK: details = "Network error"; break;
-            case MediaError.MEDIA_ERR_DECODE: details = "Hardware decode error"; break;
-            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: details = "Format unsupported"; break;
-          }
+        if (err && err.code === MediaError.MEDIA_ERR_ABORTED) return;
+        console.warn("Audio stream error, attempting fallback proxy...", e);
+        if (currentQueue.length > 0 && isPlaying) {
+          fallbackStreamViaProxy(currentQueue[currentTrackIndex]);
         }
-        console.warn("Audio element notification:", details);
-        setTimeout(handleTrackEnded, 1500);
       });
 
-      // Synchronize state strictly with native playback events
       audioElement.addEventListener("playing", () => {
         isPlaying = true;
         updatePlayStateUI();
@@ -639,7 +364,31 @@
       });
 
       audioElement.addEventListener("waiting", () => {
-        document.getElementById("currentTitle").textContent = "Buffering broadcast stream...";
+        if (isPlaying) {
+          document.getElementById("currentTitle").textContent = "Buffering broadcast stream...";
+        }
+      });
+    }
+
+    function initProgressBarSeek() {
+      const container = document.getElementById("progressBarContainer");
+      container.addEventListener("click", (e) => {
+        if (!audioElement.duration || !isFinite(audioElement.duration)) return;
+        const rect = container.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        audioElement.currentTime = pos * audioElement.duration;
+      });
+    }
+
+    function initRemoteDpadKeys() {
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "MediaPlayPause" || e.keyCode === 179) {
+          e.preventDefault(); togglePlayback();
+        } else if (e.key === "MediaTrackNext" || e.keyCode === 228) {
+          e.preventDefault(); skipToNextTrack();
+        } else if (e.key === "MediaTrackPrevious" || e.keyCode === 227) {
+          e.preventDefault(); skipToPreviousTrack();
+        }
       });
     }
 
@@ -648,7 +397,7 @@
         navigator.mediaSession.metadata = new MediaMetadata({
           title: track.title || track.fileName,
           artist: "Contributor: " + (track.uploaderName || "Anonymous"),
-          album: "Pulse Radio // Live 50-Buffer",
+          album: "Pulse Radio // Live Buffer",
           artwork: [
             { src: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=512&q=80", sizes: "512x512", type: "image/jpeg" }
           ]
@@ -677,13 +426,8 @@
               `LISTENERS: ${json.data.activeListeners} ACTIVE`;
           }
 
-          if (json.data.notModified) {
-            return;
-          }
-
-          if (json.data.etag) {
-            cachedManifestEtag = json.data.etag;
-          }
+          if (json.data.notModified) return;
+          if (json.data.etag) cachedManifestEtag = json.data.etag;
 
           if (json.data.manifest) {
             reconcileIncomingManifest(json.data.manifest);
@@ -697,13 +441,16 @@
     function reconcileIncomingManifest(incomingTracks) {
       if (incomingTracks.length === 0) {
         document.getElementById("currentTitle").textContent = "Station Idle: No active broadcasts found.";
+        document.getElementById("currentContributor").textContent = "Awaiting transmissions";
         return;
       }
 
       if (currentQueue.length === 0) {
         currentQueue = incomingTracks;
         currentTrackIndex = 0;
-        loadAndPlayTrack(currentQueue[0]);
+        const initial = currentQueue[0];
+        document.getElementById("currentTitle").textContent = initial.title || initial.fileName;
+        document.getElementById("currentContributor").textContent = `READY // @${initial.uploaderUsername} (${initial.uploaderName})`;
         return;
       }
 
@@ -711,10 +458,8 @@
       const newlyAddedTracks = incomingTracks.filter(t => !existingIds.has(t.contentId));
 
       if (newlyAddedTracks.length > 0) {
-        newlyAddedTracks.forEach(newTrack => {
-          priorityQueue.push(newTrack);
-        });
-        showToast("New broadcast received! Up next immediately after current track.");
+        newlyAddedTracks.forEach(newTrack => priorityQueue.push(newTrack));
+        showToast("New transmission received! Up next immediately.");
       }
 
       const activeContentId = currentQueue[currentTrackIndex]?.contentId;
@@ -727,16 +472,14 @@
     }
 
     function handleTrackEnded() {
-      const finishedTrack = currentQueue[currentTrackIndex];
-      if (finishedTrack) {
-        recordTrackToRecentlyPlayed(finishedTrack);
-      }
+      const finished = currentQueue[currentTrackIndex];
+      if (finished) recordTrackToRecentlyPlayed(finished);
 
       if (priorityQueue.length > 0) {
-        const nextUrgentTrack = priorityQueue.shift();
-        const foundIdx = currentQueue.findIndex(t => t.contentId === nextUrgentTrack.contentId);
-        if (foundIdx !== -1) currentTrackIndex = foundIdx;
-        loadAndPlayTrack(nextUrgentTrack);
+        const next = priorityQueue.shift();
+        const found = currentQueue.findIndex(t => t.contentId === next.contentId);
+        if (found !== -1) currentTrackIndex = found;
+        loadAndPlayTrack(next);
       } else {
         skipToNextTrack();
       }
@@ -744,23 +487,18 @@
 
     function skipToNextTrack() {
       if (currentQueue.length === 0) return;
-      const finishedTrack = currentQueue[currentTrackIndex];
-      if (finishedTrack) {
-        recordTrackToRecentlyPlayed(finishedTrack);
-      }
+      const finished = currentQueue[currentTrackIndex];
+      if (finished && isPlaying) recordTrackToRecentlyPlayed(finished);
+
       currentTrackIndex++;
-      if (currentTrackIndex >= currentQueue.length) {
-        currentTrackIndex = 0;
-      }
+      if (currentTrackIndex >= currentQueue.length) currentTrackIndex = 0;
       loadAndPlayTrack(currentQueue[currentTrackIndex]);
     }
 
     function skipToPreviousTrack() {
       if (currentQueue.length === 0) return;
       currentTrackIndex--;
-      if (currentTrackIndex < 0) {
-        currentTrackIndex = currentQueue.length - 1;
-      }
+      if (currentTrackIndex < 0) currentTrackIndex = currentQueue.length - 1;
       loadAndPlayTrack(currentQueue[currentTrackIndex]);
     }
 
@@ -772,10 +510,7 @@
         completedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
 
-      if (recentlyPlayedHistory.length > 3) {
-        recentlyPlayedHistory.pop();
-      }
-
+      if (recentlyPlayedHistory.length > 3) recentlyPlayedHistory.pop();
       renderRecentlyPlayedList();
     }
 
@@ -785,44 +520,92 @@
       document.getElementById("historyCount").textContent = `${recentlyPlayedHistory.length} / 3 Logged`;
 
       if (recentlyPlayedHistory.length === 0) {
-        list.innerHTML = `<li style="font-size:0.8rem;color:var(--text-muted);padding:8px 0;">No completed transmissions yet.</li>`;
+        const empty = document.createElement("li");
+        empty.style.cssText = "font-size:0.8rem;color:var(--text-muted);padding:8px 0;";
+        empty.textContent = "No completed transmissions yet.";
+        list.appendChild(empty);
         return;
       }
 
       recentlyPlayedHistory.forEach((item) => {
         const li = document.createElement("li");
         li.className = "queue-item";
-        li.innerHTML = `
-          <div class="queue-left">
-            <span class="queue-tag">PLAYED</span>
-            <div>
-              <div style="font-weight:600;">${item.title}</div>
-              <div style="font-size:0.75rem;color:var(--text-muted);">@${item.uploaderUsername} &bull; ${item.completedAt}</div>
-            </div>
-          </div>
-          <div style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);">
-            ${formatTime(item.durationSeconds)}
-          </div>
-        `;
+
+        const left = document.createElement("div");
+        left.className = "queue-left";
+
+        const tag = document.createElement("span");
+        tag.className = "queue-tag";
+        tag.textContent = "PLAYED";
+
+        const meta = document.createElement("div");
+        const title = document.createElement("div");
+        title.style.fontWeight = "600";
+        title.textContent = item.title;
+
+        const sub = document.createElement("div");
+        sub.style.cssText = "font-size:0.75rem;color:var(--text-muted);";
+        sub.textContent = `@${item.uploaderUsername} • ${item.completedAt}`;
+
+        meta.appendChild(title);
+        meta.appendChild(sub);
+        left.appendChild(tag);
+        left.appendChild(meta);
+
+        const dur = document.createElement("div");
+        dur.style.cssText = "font-family:var(--font-mono);font-size:0.75rem;color:var(--text-muted);";
+        dur.textContent = formatTime(item.durationSeconds);
+
+        li.appendChild(left);
+        li.appendChild(dur);
         list.appendChild(li);
       });
     }
 
     /**
-     * Safari/WebKit-Safe Audio Loader & Memory Leak Eliminator
+     * Primary Stream Engine: Direct Native HTTP Streaming
      */
-    async function loadAndPlayTrack(track) {
+    function loadAndPlayTrack(track) {
       if (!track) return;
+      setupAudioPipeline();
 
-      // Abort any pending download to prevent race conditions during rapid skips
       if (activeFetchAbortController) {
         activeFetchAbortController.abort();
+        activeFetchAbortController = null;
       }
-      activeFetchAbortController = new AbortController();
 
-      isTrackLoading = true;
-      document.getElementById("currentTitle").textContent = "Buffering: " + (track.title || track.fileName);
+      document.getElementById("currentTitle").textContent = track.title || track.fileName;
       document.getElementById("currentContributor").textContent = `BROADCAST BY @${track.uploaderUsername} (${track.uploaderName})`;
+
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+        currentBlobUrl = null;
+      }
+
+      audioElement.pause();
+      // Primary: Direct Google Drive public streaming endpoint
+      audioElement.src = `https://drive.google.com/uc?export=download&id=${encodeURIComponent(track.fileId)}`;
+      audioElement.load();
+
+      const playPromise = audioElement.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          if (err.name === "AbortError") return;
+          console.warn("Direct stream failed, falling back to proxy...", err);
+          fallbackStreamViaProxy(track);
+        });
+      }
+
+      syncMediaSession(track);
+    }
+
+    /**
+     * Secondary Stream Fallback: Chunked Base64 Proxy
+     */
+    async function fallbackStreamViaProxy(track) {
+      if (!track) return;
+      if (activeFetchAbortController) activeFetchAbortController.abort();
+      activeFetchAbortController = new AbortController();
 
       try {
         const streamUrl = `${GAS_ENDPOINT_URL}?action=streamAudio&fileId=${encodeURIComponent(track.fileId)}`;
@@ -834,74 +617,47 @@
         const json = await res.json();
 
         if (!json.success || !json.base64) {
-          throw new Error(json.error || "Backend stream returned invalid audio payload");
+          throw new Error(json.error || "Proxy failed.");
         }
 
-        // Fast chunk-safe binary assembly
-        const byteCharacters = atob(json.base64);
-        const byteNumbers = new Uint8Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        const clean = json.base64.replace(/\s/g, "");
+        const binary = atob(clean);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
         }
 
-        const audioBlob = new Blob([byteNumbers], { type: json.mimeType || track.mimeType || "audio/webm" });
+        const blob = new Blob([bytes], { type: json.mimeType || "audio/mpeg" });
+        if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+        currentBlobUrl = URL.createObjectURL(blob);
 
-        // Revoke previous Blob URL immediately
-        if (currentBlobUrl) {
-          URL.revokeObjectURL(currentBlobUrl);
-          currentBlobUrl = null;
-        }
-
-        currentBlobUrl = URL.createObjectURL(audioBlob);
-
-        // WebKit/Safari-Safe assignment: Pause and clear element state
         audioElement.pause();
         audioElement.src = currentBlobUrl;
         audioElement.load();
-
-        ensureAudioContextReady();
-
-        const playPromise = audioElement.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            if (error.name === "AbortError") {
-              // Expected when user skips ahead while buffering
-              return;
-            }
-            console.warn("Unmuted autoplay restricted by browser policy. Displaying unmute pill.");
-            audioElement.muted = true;
-            audioElement.play().catch(e => {
-              if (e.name !== "AbortError") console.warn("Muted playback attempt:", e);
-            });
-            document.getElementById("unmutePill").style.display = "inline-flex";
-          });
-        }
-
-        document.getElementById("currentTitle").textContent = track.title || track.fileName;
-        syncMediaSession(track);
+        audioElement.play().catch(() => {});
       } catch (err) {
-        if (err.name === "AbortError") {
-          return; // Skip caused intentional abort
-        }
-        console.warn("Streaming buffer notice:", err.message);
+        if (err.name === "AbortError") return;
+        console.warn("Proxy fallback also failed:", err);
         setTimeout(handleTrackEnded, 1500);
-      } finally {
-        isTrackLoading = false;
       }
     }
 
     function togglePlayback() {
-      ensureAudioContextReady();
+      setupAudioPipeline();
 
-      if (audioElement.muted) {
-        audioElement.muted = false;
+      if (currentQueue.length === 0) {
+        showToast("No audio in live buffer.");
+        return;
+      }
+
+      if (!audioElement.src || audioElement.src === "" || audioElement.src === window.location.href) {
+        loadAndPlayTrack(currentQueue[currentTrackIndex]);
+        return;
       }
 
       if (audioElement.paused) {
-        audioElement.play().catch(err => {
-          if (err.name !== "AbortError") {
-            console.warn("Playback toggle notice:", err);
-          }
+        audioElement.play().catch((err) => {
+          if (err.name !== "AbortError") console.warn("Playback notice:", err);
         });
       } else {
         audioElement.pause();
@@ -909,25 +665,36 @@
     }
 
     function handleVolumeChange(e) {
-      userBaseVolume = parseFloat(e.target.value);
+      userBaseVolume = Math.max(0, Math.min(1, parseFloat(e.target.value)));
+      if (masterGain && audioCtx) {
+        // Logarithmic volume taper
+        const logGain = userBaseVolume === 0 ? 0 : Math.pow(userBaseVolume, 2);
+        masterGain.gain.setValueAtTime(logGain, audioCtx.currentTime);
+      }
       audioElement.volume = userBaseVolume;
     }
 
     function updatePlayStateUI() {
       const disk = document.getElementById("vinylDisk");
       const playIcon = document.getElementById("playIcon");
+      const liveDot = document.getElementById("liveDot");
+      const liveStatusText = document.getElementById("liveStatusText");
 
       if (isPlaying) {
         disk.classList.add("spinning");
+        liveDot.classList.add("active");
+        liveStatusText.textContent = "ON AIR";
         playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
       } else {
         disk.classList.remove("spinning");
+        liveDot.classList.remove("active");
+        liveStatusText.textContent = "STANDBY";
         playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
       }
     }
 
     function renderVisualizer() {
-      if (isTV || !analyser) return; // Never run Canvas rendering loop on Smart TVs
+      if (isTV || !analyser) return;
 
       const canvas = document.getElementById("visCanvas");
       const ctx = canvas.getContext("2d");
@@ -935,16 +702,17 @@
       const dpr = window.devicePixelRatio || 1;
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
-      ctx.scale(dpr, dpr);
 
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
 
       function draw() {
         animationFrame = requestAnimationFrame(draw);
-        if (document.hidden) return; // Conserve battery when tab is backgrounded
+        if (document.hidden) return;
 
         analyser.getByteFrequencyData(dataArray);
+        ctx.resetTransform();
+        ctx.scale(dpr, dpr);
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
         const barCount = 48;
@@ -953,14 +721,12 @@
 
         for (let i = 0; i < barCount; i++) {
           const barHeight = (dataArray[i * 2] / 255) * canvas.clientHeight * 0.85;
-
           const gradient = ctx.createLinearGradient(0, canvas.clientHeight, 0, 0);
           gradient.addColorStop(0, "#7928CA");
           gradient.addColorStop(1, "#00F0FF");
 
           ctx.fillStyle = gradient;
           ctx.fillRect(x, canvas.clientHeight - barHeight, barWidth, barHeight);
-
           x += barWidth + 2;
         }
       }

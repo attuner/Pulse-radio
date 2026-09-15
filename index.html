@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PULSE RADIO // CONTRIBUTOR STUDIO</title>
 
-  <!-- PWA & Hardware Display Capabilities -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pulse Studio">
@@ -46,10 +45,7 @@
       overflow-x: hidden;
     }
 
-    .container {
-      width: 100%;
-      max-width: 860px;
-    }
+    .container { width: 100%; max-width: 860px; }
 
     header {
       display: flex;
@@ -60,28 +56,10 @@
       border-bottom: 1px solid var(--panel-border);
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-logo {
-      width: 32px;
-      height: 32px;
-      fill: var(--accent-cyan);
-    }
-
-    .brand-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-    }
-
-    .brand-title span {
-      color: var(--accent-cyan);
-    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo { width: 32px; height: 32px; fill: var(--accent-cyan); }
+    .brand-title { font-size: 1.15rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .brand-title span { color: var(--accent-cyan); }
 
     .status-badge {
       display: inline-flex;
@@ -97,11 +75,8 @@
     }
 
     .beacon {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #34C759;
-      box-shadow: 0 0 8px #34C759;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #34C759; box-shadow: 0 0 8px #34C759;
     }
 
     .card {
@@ -116,70 +91,34 @@
     }
 
     .tabs {
-      display: flex;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 4px;
-      border-radius: 10px;
-      margin-bottom: 24px;
+      display: flex; background: rgba(0, 0, 0, 0.4);
+      padding: 4px; border-radius: 10px; margin-bottom: 24px;
       border: 1px solid var(--panel-border);
     }
 
     .tab-btn {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 12px 16px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 8px;
-      min-height: 48px;
-      transition: all 0.2s ease;
+      flex: 1; background: transparent; border: none;
+      color: var(--text-muted); padding: 12px 16px;
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      border-radius: 8px; min-height: 48px; transition: all 0.2s ease;
     }
 
-    .tab-btn.active {
-      background: var(--accent-cyan-dim);
-      color: var(--accent-cyan);
-    }
+    .tab-btn.active { background: var(--accent-cyan-dim); color: var(--accent-cyan); }
 
-    /* Smart TV and Spatial D-Pad High-Visibility Focus Outline */
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    a:focus-visible,
-    .dropzone:focus-visible {
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, .dropzone:focus-visible {
       outline: 3px solid var(--accent-cyan) !important;
       outline-offset: 3px !important;
     }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 8px; }
 
-    label {
-      display: block;
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    select {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid var(--panel-border);
-      border-radius: 8px;
-      padding: 14px 16px;
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 0.95rem;
-      min-height: 48px;
-      outline: none;
-      transition: border-color 0.2s;
+    input[type="text"], input[type="password"], select {
+      width: 100%; background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--panel-border); border-radius: 8px;
+      padding: 14px 16px; color: var(--text-primary);
+      font-family: inherit; font-size: 0.95rem; min-height: 48px;
+      outline: none; transition: border-color 0.2s;
     }
 
     input:focus, select:focus {
@@ -188,200 +127,60 @@
     }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 100%;
-      padding: 14px 20px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border: none;
-      text-transform: uppercase;
-      min-height: 48px;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 10px; width: 100%; padding: 14px 20px; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 600; letter-spacing: 0.5px;
+      cursor: pointer; transition: all 0.2s ease; border: none;
+      text-transform: uppercase; min-height: 48px;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent-cyan), #00A3FF);
-      color: #000;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      filter: brightness(1.1);
-      box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
-    }
-
-    .btn-danger {
-      background: var(--accent-crimson);
-      color: #FFF;
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-primary);
-      border: 1px solid var(--panel-border);
-    }
-
-    .btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      filter: grayscale(1);
-    }
+    .btn-primary { background: linear-gradient(135deg, var(--accent-cyan), #00A3FF); color: #000; }
+    .btn-primary:hover:not(:disabled) { filter: brightness(1.1); box-shadow: 0 0 16px rgba(0, 240, 255, 0.4); }
+    .btn-danger { background: var(--accent-crimson); color: #FFF; }
+    .btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-primary); border: 1px solid var(--panel-border); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(1); }
 
     .user-banner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 20px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--panel-border);
+      display: flex; justify-content: space-between; align-items: center;
+      padding-bottom: 20px; margin-bottom: 24px; border-bottom: 1px solid var(--panel-border);
     }
 
-    .user-info h3 {
-      font-size: 1.1rem;
-      color: var(--text-primary);
-    }
-
-    .user-info p {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-family: var(--font-mono);
-    }
+    .user-info h3 { font-size: 1.1rem; color: var(--text-primary); }
+    .user-info p { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); }
 
     .logout-btn {
-      padding: 8px 16px;
-      background: transparent;
-      border: 1px solid var(--panel-border);
-      border-radius: 6px;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      min-height: 44px;
-      cursor: pointer;
+      padding: 8px 16px; background: transparent; border: 1px solid var(--panel-border);
+      border-radius: 6px; color: var(--text-muted); font-size: 0.75rem; min-height: 44px; cursor: pointer;
     }
-
-    .logout-btn:hover {
-      color: var(--accent-crimson);
-      border-color: var(--accent-crimson);
-    }
+    .logout-btn:hover { color: var(--accent-crimson); border-color: var(--accent-crimson); }
 
     .capacity-banner {
-      background: rgba(0, 240, 255, 0.05);
-      border: 1px solid rgba(0, 240, 255, 0.2);
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.8rem;
-      font-family: var(--font-mono);
+      background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 8px; padding: 12px 16px; margin-bottom: 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; font-family: var(--font-mono);
     }
 
-    .rec-studio {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 16px 0;
-    }
+    .rec-studio { display: flex; flex-direction: column; align-items: center; padding: 16px 0; }
+    .timecode { font-family: var(--font-mono); font-size: clamp(2.2rem, 5vw, 3rem); font-weight: 700; color: var(--text-primary); letter-spacing: 2px; margin: 16px 0; }
 
-    .timecode {
-      font-family: var(--font-mono);
-      font-size: clamp(2.2rem, 5vw, 3rem);
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: 2px;
-      margin: 16px 0;
-    }
+    .meter-container { width: 100%; height: 10px; background: rgba(0, 0, 0, 0.6); border-radius: 5px; margin-bottom: 20px; overflow: hidden; display: flex; }
+    .meter-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #34C759 60%, #FFCC00 85%, var(--accent-crimson) 100%); will-change: width; }
 
-    .meter-container {
-      width: 100%;
-      height: 10px;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 5px;
-      margin-bottom: 20px;
-      overflow: hidden;
-      display: flex;
-    }
+    .clip-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #333; color: #666; margin-bottom: 16px; font-family: var(--font-mono); }
+    .clip-badge.clipping { background: var(--accent-crimson); color: #FFF; box-shadow: 0 0 8px var(--accent-crimson); }
 
-    .meter-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #34C759 60%, #FFCC00 85%, var(--accent-crimson) 100%);
-      transition: width 0.05s ease;
-    }
-
-    .clip-badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: #333;
-      color: #666;
-      margin-bottom: 16px;
-      font-family: var(--font-mono);
-    }
-
-    .clip-badge.clipping {
-      background: var(--accent-crimson);
-      color: #FFF;
-      box-shadow: 0 0 8px var(--accent-crimson);
-    }
-
-    .scope-canvas {
-      width: 100%;
-      height: 100px;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 8px;
-      border: 1px solid var(--panel-border);
-      margin-bottom: 24px;
-    }
-
-    .record-controls {
-      display: flex;
-      gap: 16px;
-      width: 100%;
-      max-width: 400px;
-    }
+    .scope-canvas { width: 100%; height: 100px; background: rgba(0, 0, 0, 0.6); border-radius: 8px; border: 1px solid var(--panel-border); margin-bottom: 24px; }
+    .record-controls { display: flex; gap: 16px; width: 100%; max-width: 400px; }
 
     .rec-circle-btn {
-      width: 80px;
-      height: 80px;
-      min-width: 80px;
-      min-height: 80px;
-      border-radius: 50%;
-      background: var(--bg-surface);
-      border: 2px solid var(--accent-crimson);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      margin-bottom: 20px;
-      transition: all 0.2s;
+      width: 80px; height: 80px; border-radius: 50%; background: var(--bg-surface);
+      border: 2px solid var(--accent-crimson); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; margin-bottom: 20px; transition: all 0.2s;
     }
-
-    .rec-circle-inner {
-      width: 30px;
-      height: 30px;
-      background: var(--accent-crimson);
-      border-radius: 50%;
-      transition: all 0.2s;
-    }
-
-    .rec-circle-btn.recording {
-      border-color: var(--accent-crimson);
-      box-shadow: 0 0 24px var(--accent-crimson);
-      animation: pulseRecord 1.5s infinite;
-    }
-
-    .rec-circle-btn.recording .rec-circle-inner {
-      border-radius: 6px;
-      transform: scale(0.8);
-    }
+    .rec-circle-inner { width: 30px; height: 30px; background: var(--accent-crimson); border-radius: 50%; transition: all 0.2s; }
+    .rec-circle-btn.recording { border-color: var(--accent-crimson); box-shadow: 0 0 24px var(--accent-crimson); animation: pulseRecord 1.5s infinite; }
+    .rec-circle-btn.recording .rec-circle-inner { border-radius: 6px; transform: scale(0.8); }
 
     @keyframes pulseRecord {
       0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); }
@@ -390,93 +189,29 @@
     }
 
     .dropzone {
-      border: 2px dashed var(--panel-border);
-      border-radius: 12px;
-      padding: clamp(24px, 5vw, 40px);
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: rgba(0, 0, 0, 0.2);
+      border: 2px dashed var(--panel-border); border-radius: 12px;
+      padding: clamp(24px, 5vw, 40px); text-align: center; cursor: pointer;
+      transition: all 0.2s; background: rgba(0, 0, 0, 0.2);
     }
+    .dropzone:hover, .dropzone.dragover { border-color: var(--accent-cyan); background: var(--accent-cyan-dim); }
 
-    .dropzone:hover, .dropzone.dragover {
-      border-color: var(--accent-cyan);
-      background: var(--accent-cyan-dim);
-    }
+    .progress-box { margin-top: 20px; display: none; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-family: var(--font-mono); margin-bottom: 8px; }
+    .progress-bar-bg { height: 8px; background: rgba(0, 0, 0, 0.6); border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan)); transition: width 0.3s; }
 
-    .progress-box {
-      margin-top: 20px;
-      display: none;
-    }
+    .preview-player { width: 100%; margin: 20px 0; display: none; }
+    audio { width: 100%; height: 48px; }
 
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      font-family: var(--font-mono);
-      margin-bottom: 8px;
-    }
-
-    .progress-bar-bg {
-      height: 8px;
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
-      transition: width 0.3s;
-    }
-
-    .preview-player {
-      width: 100%;
-      margin: 20px 0;
-      display: none;
-    }
-
-    audio {
-      width: 100%;
-      height: 48px;
-    }
-
-    .alert {
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      margin-bottom: 16px;
-      display: none;
-    }
-
-    .alert-error {
-      background: rgba(255, 59, 48, 0.15);
-      border: 1px solid var(--accent-crimson);
-      color: #FFB4AB;
-    }
-
-    .alert-success {
-      background: rgba(52, 199, 89, 0.15);
-      border: 1px solid #34C759;
-      color: #B4F8C8;
-    }
+    .alert { padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; display: none; }
+    .alert-error { background: rgba(255, 59, 48, 0.15); border: 1px solid var(--accent-crimson); color: #FFB4AB; }
+    .alert-success { background: rgba(52, 199, 89, 0.15); border: 1px solid #34C759; color: #B4F8C8; }
 
     .link-radio {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--accent-cyan);
-      text-decoration: none;
-      font-size: 0.9rem;
-      min-height: 48px;
-      padding: 8px 16px;
-      margin-top: 16px;
+      display: inline-flex; align-items: center; gap: 6px; color: var(--accent-cyan);
+      text-decoration: none; font-size: 0.9rem; min-height: 48px; padding: 8px 16px; margin-top: 16px;
     }
-
-    .link-radio:hover {
-      text-decoration: underline;
-    }
+    .link-radio:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -497,7 +232,6 @@
 
     <div id="alertBox" class="alert"></div>
 
-    <!-- AUTHENTICATION CARD -->
     <div id="authPanel" class="card">
       <div class="tabs" role="tablist">
         <button id="tabLoginBtn" class="tab-btn active" role="tab" aria-selected="true" onclick="switchAuthTab('login')">SIGN IN</button>
@@ -507,22 +241,22 @@
       <form id="authForm" onsubmit="handleAuthSubmit(event)">
         <div id="fullNameGroup" class="form-group" style="display: none;">
           <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Alex Mercer">
+          <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Alex Mercer" maxlength="80">
         </div>
 
         <div class="form-group">
           <label for="username">Contributor Username</label>
-          <input type="text" id="username" required autocomplete="username" placeholder="lowercase letters, numbers, underscores">
+          <input type="text" id="username" required autocomplete="username" placeholder="lowercase letters, numbers, underscores" maxlength="20">
         </div>
 
         <div class="form-group">
           <label for="password">Passphrase</label>
-          <input type="password" id="password" required autocomplete="current-password" placeholder="Min 8 chars: 1 upper, 1 num, 1 sym">
+          <input type="password" id="password" required autocomplete="current-password" placeholder="Min 8 chars: 1 upper, 1 num, 1 sym" maxlength="100">
         </div>
 
         <div id="confirmPassGroup" class="form-group" style="display: none;">
           <label for="confirmPassword">Confirm Passphrase</label>
-          <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Re-enter your passphrase">
+          <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Re-enter your passphrase" maxlength="100">
         </div>
 
         <button type="submit" id="authSubmitBtn" class="btn btn-primary">
@@ -531,7 +265,6 @@
       </form>
     </div>
 
-    <!-- CONTRIBUTOR STUDIO DASHBOARD -->
     <div id="studioPanel" class="card" style="display: none;">
       <div class="user-banner">
         <div class="user-info">
@@ -541,7 +274,6 @@
         <button class="logout-btn" onclick="logout()">LOG OUT</button>
       </div>
 
-      <!-- 50-SLOT CAPACITY BADGE -->
       <div class="capacity-banner">
         <span>STORAGE BUFFER: 50 TRACKS MAX</span>
         <span style="color:var(--accent-cyan);">FIFO ACTIVE</span>
@@ -552,7 +284,6 @@
         <button id="tabFileBtn" class="tab-btn" role="tab" aria-selected="false" onclick="switchStudioTab('file')">AUDIO FILE INGEST</button>
       </div>
 
-      <!-- CONSOLE 1: HARDWARE MICROPHONE RECORDER -->
       <div id="micConsole">
         <div class="form-group">
           <label for="micSelect">Audio Input Hardware</label>
@@ -579,7 +310,6 @@
         </div>
       </div>
 
-      <!-- CONSOLE 2: DRAG-AND-DROP FILE INGEST -->
       <div id="fileConsole" style="display: none;">
         <div class="dropzone" id="dropArea" tabindex="0" role="button" aria-label="Drop audio file or click to select" onclick="document.getElementById('audioFileInput').click()" onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('audioFileInput').click()">
           <svg style="width:48px;height:48px;fill:var(--text-muted);margin-bottom:12px;" viewBox="0 0 24 24">
@@ -591,7 +321,6 @@
         </div>
       </div>
 
-      <!-- AUDITION REVIEW & INGESTION FORM -->
       <div id="submissionContainer" style="margin-top: 24px;">
         <div id="previewBox" class="preview-player">
           <label>Review Audio Take</label>
@@ -600,7 +329,7 @@
 
         <div class="form-group" style="margin-top: 16px;">
           <label for="trackTitle">Broadcast Transmission Title</label>
-          <input type="text" id="trackTitle" placeholder="e.g. Transmission #42: Ambient Horizons">
+          <input type="text" id="trackTitle" placeholder="e.g. Transmission #42: Ambient Horizons" maxlength="80">
         </div>
 
         <button id="publishBtn" class="btn btn-primary" onclick="initiateUploadPipeline()" disabled>
@@ -628,13 +357,9 @@
   </div>
 
   <script>
-    /**
-     * ENDPOINT CONFIGURATION: Paste your deployed Google Apps Script URL below
-     */
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
-    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB Hard Ceiling
+    const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
-    // State Variables
     let currentAuthMode = "login";
     let currentUserSession = null;
     let audioStream = null;
@@ -656,6 +381,10 @@
       initAudioDropzone();
     });
 
+    window.addEventListener("beforeunload", () => {
+      teardownHardwareTracks();
+    });
+
     function showAlert(msg, isError = true) {
       const box = document.getElementById("alertBox");
       box.className = isError ? "alert alert-error" : "alert alert-success";
@@ -664,15 +393,11 @@
       setTimeout(() => { box.style.display = "none"; }, 6000);
     }
 
-    /**
-     * Web Cryptography API: Client-Side SHA-256 Hasher
-     */
     async function computeClientSha256(plaintext, salt) {
       const encoder = new TextEncoder();
       const payload = encoder.encode(plaintext + "::" + salt);
       const hashBuffer = await crypto.subtle.digest("SHA-256", payload);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
     }
 
     function checkStoredSession() {
@@ -720,7 +445,7 @@
           return;
         }
         if (pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass) || !/[^a-zA-Z0-9]/.test(pass)) {
-          showAlert("Password requires at least 8 chars, 1 uppercase, 1 number, and 1 symbol.");
+          showAlert("Password requires at least 8 chars: 1 uppercase, 1 number, and 1 symbol.");
           return;
         }
         if (pass !== confPass) {
@@ -729,9 +454,7 @@
         }
 
         submitBtn.disabled = true;
-
         try {
-          // Dynamic client-side pre-hashing using username seed
           const clientHash = await computeClientSha256(pass, user + "_registration_seed");
           const resp = await executeGasRequest({
             action: "registerUser",
@@ -748,18 +471,16 @@
             showAlert(resp.error || "Registration failed.");
           }
         } catch (err) {
-          showAlert("Network failure contacting backend during registration.");
+          showAlert("Network failure during registration.");
         } finally {
           submitBtn.disabled = false;
         }
       } else {
         submitBtn.disabled = true;
-
         try {
-          // Retrieve user-specific salt challenge from backend
           const saltResp = await executeGasRequest({ action: "getSalt", username: user }, "GET");
           if (!saltResp.success || !saltResp.data.salt) {
-            showAlert(saltResp.error || "Failed to retrieve user salt challenge.");
+            showAlert(saltResp.error || "Failed to retrieve authentication challenge.");
             submitBtn.disabled = false;
             return;
           }
@@ -817,9 +538,7 @@
 
     function teardownHardwareTracks() {
       if (audioStream) {
-        audioStream.getTracks().forEach(track => {
-          track.stop();
-        });
+        audioStream.getTracks().forEach(t => t.stop());
         audioStream = null;
       }
     }
@@ -828,8 +547,8 @@
       const select = document.getElementById("micSelect");
       select.innerHTML = "";
       try {
-        const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        tempStream.getTracks().forEach(t => t.stop());
+        const temp = await navigator.mediaDevices.getUserMedia({ audio: true });
+        temp.getTracks().forEach(t => t.stop());
 
         const devices = await navigator.mediaDevices.enumerateDevices();
         devices.filter(d => d.kind === "audioinput").forEach((d, idx) => {
@@ -839,19 +558,19 @@
           select.appendChild(opt);
         });
       } catch (err) {
-        showAlert("Microphone permission denied. Enable mic access in your browser settings.");
+        showAlert("Microphone permission denied.");
       }
     }
 
-    async function switchMicrophoneDevice() {
+    function switchMicrophoneDevice() {
       if (mediaRecorder && mediaRecorder.state === "recording") {
-        showAlert("Please stop the active recording before switching hardware inputs.");
+        showAlert("Stop recording prior to switching hardware devices.");
         return;
       }
       teardownHardwareTracks();
     }
 
-    async function toggleRecording() {
+    function toggleRecording() {
       if (!mediaRecorder || mediaRecorder.state === "inactive") {
         startRecording();
       }
@@ -864,10 +583,7 @@
         const constraints = {
           audio: {
             deviceId: deviceId ? { exact: deviceId } : undefined,
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-            sampleRate: 48000
+            echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000
           }
         };
 
@@ -904,13 +620,18 @@
           document.getElementById("previewBox").style.display = "block";
           document.getElementById("publishBtn").disabled = false;
 
-          const arrayBuffer = await processedBlob.arrayBuffer();
-          const decoded = await audioContext.decodeAudioData(arrayBuffer.slice(0));
-          processedDuration = decoded.duration;
+          try {
+            const arrayBuffer = await processedBlob.arrayBuffer();
+            const decoded = await audioContext.decodeAudioData(arrayBuffer.slice(0));
+            processedDuration = decoded.duration;
+          } catch (e) {
+            processedDuration = Math.round(recElapsedTime / 1000);
+          }
         };
 
         mediaRecorder.start(250);
-        recStartTime = Date.now() - recElapsedTime;
+        recStartTime = Date.now();
+        recElapsedTime = 0;
         recTimerId = setInterval(updateRecTimer, 100);
 
         document.getElementById("recordTrigger").classList.add("recording");
@@ -920,7 +641,7 @@
 
         renderScope();
       } catch (err) {
-        showAlert("Failed to start audio recording engine: " + err.message);
+        showAlert("Failed to start audio engine: " + err.message);
       }
     }
 
@@ -1041,19 +762,16 @@
 
     async function processSelectedFile(file) {
       if (!file.type.startsWith("audio/") && !file.name.match(/\.(mp3|wav|ogg|webm|m4a|flac)$/i)) {
-        showAlert("Unsupported file format. Please upload an authentic audio file.");
+        showAlert("Unsupported file format.");
         return;
       }
       if (file.size > MAX_FILE_SIZE) {
-        showAlert("File exceeds the strict 20MB limit.");
+        showAlert("File exceeds strict 20MB limit.");
         return;
       }
 
       processedBlob = file;
-
-      if (activePreviewBlobUrl) {
-        URL.revokeObjectURL(activePreviewBlobUrl);
-      }
+      if (activePreviewBlobUrl) URL.revokeObjectURL(activePreviewBlobUrl);
       activePreviewBlobUrl = URL.createObjectURL(file);
 
       const previewAudio = document.getElementById("previewAudio");
@@ -1061,21 +779,18 @@
       document.getElementById("previewBox").style.display = "block";
       document.getElementById("publishBtn").disabled = false;
 
-      const tempAudio = new Audio();
-      tempAudio.src = activePreviewBlobUrl;
-      tempAudio.addEventListener("loadedmetadata", () => {
-        processedDuration = tempAudio.duration;
+      const temp = new Audio();
+      temp.src = activePreviewBlobUrl;
+      temp.addEventListener("loadedmetadata", () => {
+        processedDuration = isFinite(temp.duration) ? temp.duration : 0;
       });
     }
 
-    /**
-     * Chunked Base64 Encoder: Prevents call-stack overflows on 20MB buffers
-     */
     function arrayBufferToBase64(buffer) {
       let binary = "";
       const bytes = new Uint8Array(buffer);
       const len = bytes.byteLength;
-      const chunkSize = 8192; // 8KB Safe stack chunk
+      const chunkSize = 8192;
       for (let i = 0; i < len; i += chunkSize) {
         binary += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, len)));
       }
@@ -1084,7 +799,7 @@
 
     async function initiateUploadPipeline() {
       if (!processedBlob) {
-        showAlert("No audio recording or file available to publish.");
+        showAlert("No audio available to publish.");
         return;
       }
       const titleInput = document.getElementById("trackTitle");
@@ -1112,7 +827,7 @@
         setProgress("Stage 2/4: Chunk-encoding Base64 stream...", 45);
         const base64Data = arrayBufferToBase64(arrayBuffer);
 
-        setProgress("Stage 3/4: Transmitting payload to serverless cloud...", 70);
+        setProgress("Stage 3/4: Transmitting payload...", 70);
         const payload = {
           action: "uploadAudioTrack",
           auth: {
@@ -1134,10 +849,8 @@
 
         if (response.success) {
           setProgress("Broadcast Published Successfully!", 100);
-          showAlert("Transmission is live in the 50-track buffer!", false);
-          setTimeout(() => {
-            location.reload();
-          }, 2000);
+          showAlert("Transmission is live!", false);
+          setTimeout(() => { location.reload(); }, 2000);
         } else {
           showAlert(response.error || "Upload failed on server.");
           publishBtn.disabled = false;
@@ -1163,7 +876,12 @@
             options.body = JSON.stringify(data);
           }
 
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 45000);
+          options.signal = controller.signal;
+
           const res = await fetch(url, options);
+          clearTimeout(timeoutId);
           return await res.json();
         } catch (err) {
           if (attempt === maxRetries) throw err;
