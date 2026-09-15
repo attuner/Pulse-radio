@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PULSE RADIO // LIVE STREAM</title>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     :root {
       --bg-primary: #090A0F;
@@ -44,7 +45,6 @@
       align-items: center;
     }
 
-    /* Non-intrusive Unmute floating pill */
     .unmute-pill {
       position: fixed;
       top: 16px;
@@ -70,7 +70,6 @@
       50% { transform: translateY(-4px); }
     }
 
-    /* Header */
     header {
       width: 100%;
       display: flex;
@@ -116,7 +115,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Turntable / Vinyl Console */
     .deck-container {
       position: relative;
       width: 280px;
@@ -172,7 +170,6 @@
       border-radius: 50%;
     }
 
-    /* Visualizer Canvas */
     .vis-canvas {
       width: 100%;
       height: 120px;
@@ -180,7 +177,6 @@
       border-radius: 8px;
     }
 
-    /* Metadata Panel */
     .meta-panel {
       text-align: center;
       margin-bottom: 24px;
@@ -208,7 +204,6 @@
       font-family: var(--font-mono);
     }
 
-    /* Progress Display */
     .live-progress-container {
       width: 100%;
       height: 6px;
@@ -225,7 +220,7 @@
       transition: width 0.25s linear;
     }
 
-    /* Master Controls (Skip Buttons Removed) */
+    /* RESTORED PREVIOUS & NEXT CONTROLS */
     .controls {
       display: flex;
       align-items: center;
@@ -248,6 +243,11 @@
       transition: all 0.2s;
     }
 
+    .ctrl-btn:hover {
+      border-color: var(--accent-cyan);
+      transform: scale(1.05);
+    }
+
     .ctrl-btn.btn-play {
       width: 72px;
       height: 72px;
@@ -262,13 +262,17 @@
       transform: scale(1.06);
     }
 
-    .btn-play svg {
-      width: 32px;
-      height: 32px;
+    .ctrl-btn svg {
+      width: 24px;
+      height: 24px;
       fill: currentColor;
     }
 
-    /* Volume Slider */
+    .btn-play svg {
+      width: 32px;
+      height: 32px;
+    }
+
     .volume-group {
       display: flex;
       align-items: center;
@@ -297,7 +301,7 @@
       box-shadow: 0 0 8px var(--accent-cyan);
     }
 
-    /* Recently Played History Drawer (Last 3 Tracks) */
+    /* RECENTLY PLAYED HISTORY DRAWER */
     .queue-panel {
       width: 100%;
       background: var(--bg-card);
@@ -383,7 +387,6 @@
 </head>
 <body>
 
-  <!-- FLOATING UNMUTE NOTIFICATION PILL -->
   <div id="unmutePill" class="unmute-pill" onclick="handleUserUnlockInteraction()">
     <span>🔊 TAP ANYWHERE TO UNMUTE</span>
   </div>
@@ -397,7 +400,6 @@
       <div class="listeners-count" id="listenerReadout">LISTENERS: 1 ACTIVE</div>
     </header>
 
-    <!-- VINYL TURNTABLE -->
     <div class="deck-container">
       <div id="vinylDisk" class="vinyl">
         <div class="vinyl-label">
@@ -406,29 +408,33 @@
       </div>
     </div>
 
-    <!-- SPECTRUM VISUALIZER -->
     <canvas id="visCanvas" class="vis-canvas"></canvas>
 
-    <!-- METADATA READOUT -->
     <div class="meta-panel">
       <div id="currentTitle" class="track-title">Connecting to Broadcast Stream...</div>
       <div id="currentContributor" class="track-contributor">--</div>
       <div id="currentTimestamp" class="track-time">--:--:--</div>
     </div>
 
-    <!-- NON-SEEKABLE STREAM PROGRESS BAR -->
     <div class="live-progress-container">
       <div id="streamProgressBar" class="live-progress-bar"></div>
     </div>
 
-    <!-- MASTER PLAYBACK CONTROLS (SKIP FORBIDDEN) -->
+    <!-- RESTORED NAVIGATION CONTROLS: PREVIOUS, PLAY/PAUSE, NEXT -->
     <div class="controls">
+      <button class="ctrl-btn" onclick="skipToPreviousTrack()" title="Previous Transmission">
+        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+      </button>
+
       <button id="masterPlayBtn" class="ctrl-btn btn-play" onclick="togglePlayback()" title="Play / Pause">
         <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </button>
+
+      <button class="ctrl-btn" onclick="skipToNextTrack()" title="Next Transmission">
+        <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+      </button>
     </div>
 
-    <!-- VOLUME HARDWARE GAIN -->
     <div class="volume-group">
       <svg style="width:18px;height:18px;fill:var(--text-muted);" viewBox="0 0 24 24">
         <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
@@ -436,7 +442,7 @@
       <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.85" oninput="handleVolumeChange(event)">
     </div>
 
-    <!-- RECENTLY PLAYED HISTORY DRAWER (LAST 3 TRACKS ONLY) -->
+    <!-- RECENTLY PLAYED HISTORY DRAWER (LAST 3 TRACKS) -->
     <div class="queue-panel">
       <div class="queue-header">
         <h4>Recently Played (Last 3 Tracks)</h4>
@@ -448,16 +454,17 @@
 
   <div id="toastNotification" class="toast"></div>
 
-  <!-- MAIN AUDIO CHANNEL & OVERLAY VOICEOVER CHANNEL -->
+  <!-- PERSISTENT BROADCAST & WEBRTC OVERLAY AUDIO ELEMENTS -->
   <audio id="radioAudio" playsinline webkit-playsinline preload="auto"></audio>
-  <audio id="voiceoverAudio" playsinline webkit-playsinline preload="auto"></audio>
+  <audio id="voiceoverAudio" playsinline webkit-playsinline autoplay></audio>
 
   <script>
     /**
      * ENDPOINT CONFIGURATION: Paste your deployed Google Apps Script URL below
      */
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
-    const POLL_INTERVAL = 15000; // Poll manifest, heartbeat, and voiceover every 15 seconds
+    const POLL_INTERVAL = 15000;
+    const WEBRTC_ROOM_ID = "pulse-radio-live-broadcast-room-2026";
 
     // Audio Engine State
     let audioCtx = null;
@@ -477,12 +484,16 @@
       localStorage.setItem("PULSE_RADIO_LISTENER_ID", listenerSessionId);
     }
 
-    // Queues & Last 3 History Buffer
+    // Queues & History
     let currentQueue = [];
     let priorityQueue = [];
     let recentlyPlayedHistory = [];
     let pollTimerId = null;
-    let lastVoiceoverId = null;
+
+    // WebRTC Listener Client
+    let listenerPeer = null;
+    let hostDataConn = null;
+    let hostMediaCall = null;
 
     const audioElement = document.getElementById("radioAudio");
     const voiceoverElement = document.getElementById("voiceoverAudio");
@@ -491,9 +502,8 @@
       initAudioElementListeners();
       initVisibilityChangeHandler();
       setupGlobalAutoplayUnlockListener();
-      
-      // Direct load and instant audio setup
       bootstrapLiveStation();
+      initWebRTCListener();
     });
 
     function showToast(message) {
@@ -503,7 +513,6 @@
       setTimeout(() => { toast.classList.remove("visible"); }, 4000);
     }
 
-    // Autoplay Unlocker & Gesture Interceptors
     function setupGlobalAutoplayUnlockListener() {
       const unlockEvents = ["click", "touchstart", "keydown"];
       const unlocker = () => {
@@ -546,12 +555,106 @@
 
         audioElement.volume = userBaseVolume;
 
-        // Fetch manifest immediately
         await fetchLiveManifest();
         pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
       } catch (err) {
         console.error("Bootstrap error:", err);
       }
+    }
+
+    // WebRTC Real-Time Listener Initialization
+    function initWebRTCListener() {
+      try {
+        listenerPeer = new Peer({ debug: 1 });
+
+        listenerPeer.on("open", () => {
+          connectToBroadcastHost();
+        });
+
+        listenerPeer.on("call", (call) => {
+          hostMediaCall = call;
+          call.answer(); // Auto-answer broadcast stream
+          call.on("stream", (remoteStream) => {
+            voiceoverElement.srcObject = remoteStream;
+            voiceoverElement.volume = 1.0;
+            voiceoverElement.play().catch(e => console.warn("Live stream voice autoplay:", e));
+          });
+        });
+      } catch (e) {
+        console.warn("WebRTC listener peer init:", e);
+      }
+    }
+
+    function connectToBroadcastHost() {
+      if (!listenerPeer || listenerPeer.destroyed) return;
+
+      hostDataConn = listenerPeer.connect(WEBRTC_ROOM_ID);
+
+      hostDataConn.on("open", () => {
+        // Request media call if host is broadcasting
+        const dummyCanvas = document.createElement("canvas");
+        const dummyStream = dummyCanvas.captureStream ? dummyCanvas.captureStream() : null;
+        if (dummyStream) {
+          const call = listenerPeer.call(WEBRTC_ROOM_ID, dummyStream);
+          call.on("stream", (remoteStream) => {
+            voiceoverElement.srcObject = remoteStream;
+            voiceoverElement.volume = 1.0;
+            voiceoverElement.play().catch(e => console.warn("Live stream voice:", e));
+          });
+        }
+      });
+
+      hostDataConn.on("data", (data) => {
+        if (data.type === "VOICEOVER_START") {
+          showToast(`⚡ Live Contributor Voiceover: @${data.uploader || "Host"}`);
+          duckMainVolume(0.15, 100);
+        } else if (data.type === "VOICEOVER_END") {
+          restoreMainVolume(250);
+          voiceoverElement.srcObject = null;
+        }
+      });
+
+      hostDataConn.on("close", () => {
+        setTimeout(connectToBroadcastHost, 10000);
+      });
+
+      hostDataConn.on("error", () => {
+        setTimeout(connectToBroadcastHost, 15000);
+      });
+    }
+
+    function duckMainVolume(targetVolRatio, durationMs) {
+      const startVol = audioElement.volume;
+      const targetVol = userBaseVolume * targetVolRatio;
+      const steps = 10;
+      const stepInterval = durationMs / steps;
+      let currentStep = 0;
+
+      const duckTimer = setInterval(() => {
+        currentStep++;
+        audioElement.volume = Math.max(0.05, startVol + ((targetVol - startVol) * (currentStep / steps)));
+        if (currentStep >= steps) {
+          clearInterval(duckTimer);
+          audioElement.volume = targetVol;
+        }
+      }, stepInterval);
+    }
+
+    function restoreMainVolume(durationMs = 250) {
+      const startVol = audioElement.volume;
+      const targetVol = userBaseVolume;
+      const steps = 10;
+      const stepInterval = durationMs / steps;
+      let currentStep = 0;
+
+      const restoreTimer = setInterval(() => {
+        currentStep++;
+        audioElement.volume = Math.min(1.0, startVol + ((targetVol - startVol) * (currentStep / steps)));
+        if (currentStep >= steps) {
+          clearInterval(restoreTimer);
+          audioElement.volume = targetVol;
+        }
+      }, stepInterval);
     }
 
     function initAudioElementListeners() {
@@ -582,7 +685,7 @@
         }
         console.error("Audio playback failure:", details, e);
         showToast(`Skipped track (${details}). Advancing...`);
-        setTimeout(handleTrackEnded, 1500);
+        setTimeout(skipToNextTrack, 1500);
       });
 
       audioElement.addEventListener("play", () => {
@@ -594,13 +697,9 @@
         isPlaying = false;
         updatePlayStateUI();
       });
-
-      // Voiceover Channel Handlers for Audio Ducking
-      voiceoverElement.addEventListener("ended", restoreMainVolume);
-      voiceoverElement.addEventListener("error", restoreMainVolume);
     }
 
-    // Media Session Integration (Skip explicitly disabled)
+    // Media Session Integration with Restored Hardware Skipping
     function syncMediaSession(track) {
       if ("mediaSession" in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -614,14 +713,12 @@
 
         navigator.mediaSession.setActionHandler("play", () => togglePlayback());
         navigator.mediaSession.setActionHandler("pause", () => togglePlayback());
-        
-        // Remove skip ability from system lock screens
-        try { navigator.mediaSession.setActionHandler("nexttrack", null); } catch(e){}
-        try { navigator.mediaSession.setActionHandler("previoustrack", null); } catch(e){}
+        navigator.mediaSession.setActionHandler("nexttrack", () => skipToNextTrack());
+        navigator.mediaSession.setActionHandler("previoustrack", () => skipToPreviousTrack());
       }
     }
 
-    // Manifest Polling, Heartbeat, and Voiceover Check
+    // Manifest Polling & Heartbeat
     async function fetchLiveManifest() {
       try {
         const endpoint = `${GAS_ENDPOINT_URL}?action=getLiveManifest&listenerId=${encodeURIComponent(listenerSessionId)}`;
@@ -629,16 +726,9 @@
         const json = await res.json();
 
         if (json.success && json.data) {
-          // Update live listener counter
           if (json.data.activeListeners !== undefined) {
             document.getElementById("listenerReadout").textContent = 
               `LISTENERS: ${json.data.activeListeners} ACTIVE`;
-          }
-
-          // Handle incoming live voiceover snippets
-          if (json.data.liveVoiceover && json.data.liveVoiceover.voiceId !== lastVoiceoverId) {
-            lastVoiceoverId = json.data.liveVoiceover.voiceId;
-            triggerLiveVoiceoverDucking(json.data.liveVoiceover);
           }
 
           if (json.data.manifest) {
@@ -682,7 +772,7 @@
       }
     }
 
-    // Progression: Record Completed Track to Last 3 History Buffer
+    // Queue Navigation & History Logging
     function handleTrackEnded() {
       const finishedTrack = currentQueue[currentTrackIndex];
       if (finishedTrack) {
@@ -695,15 +785,32 @@
         if (foundIdx !== -1) currentTrackIndex = foundIdx;
         loadAndPlayTrack(nextUrgentTrack);
       } else {
-        currentTrackIndex++;
-        if (currentTrackIndex >= currentQueue.length) {
-          currentTrackIndex = 0;
-        }
-        loadAndPlayTrack(currentQueue[currentTrackIndex]);
+        skipToNextTrack();
       }
     }
 
-    // Maintain only the Last 3 Completed Tracks
+    function skipToNextTrack() {
+      if (currentQueue.length === 0) return;
+      const finishedTrack = currentQueue[currentTrackIndex];
+      if (finishedTrack) {
+        recordTrackToRecentlyPlayed(finishedTrack);
+      }
+      currentTrackIndex++;
+      if (currentTrackIndex >= currentQueue.length) {
+        currentTrackIndex = 0;
+      }
+      loadAndPlayTrack(currentQueue[currentTrackIndex]);
+    }
+
+    function skipToPreviousTrack() {
+      if (currentQueue.length === 0) return;
+      currentTrackIndex--;
+      if (currentTrackIndex < 0) {
+        currentTrackIndex = currentQueue.length - 1;
+      }
+      loadAndPlayTrack(currentQueue[currentTrackIndex]);
+    }
+
     function recordTrackToRecentlyPlayed(track) {
       recentlyPlayedHistory.unshift({
         title: track.title || track.fileName,
@@ -748,7 +855,7 @@
       });
     }
 
-    // Proxied Audio Fetch & Autoplay Mitigation
+    // Proxied Audio Loader
     async function loadAndPlayTrack(track) {
       if (!track || isTrackLoading) return;
       isTrackLoading = true;
@@ -784,8 +891,7 @@
         const playPromise = audioElement.play();
         if (playPromise !== undefined) {
           playPromise.catch(error => {
-            console.warn("Unmuted autoplay restricted by browser policy. Displaying unmute pill.");
-            // Keep muted so stream starts; user un-mutes via interaction
+            console.warn("Unmuted autoplay restricted. Displaying unmute pill.");
             audioElement.muted = true;
             audioElement.play().catch(e => console.warn("Muted playback attempt:", e));
             document.getElementById("unmutePill").style.display = "inline-flex";
@@ -797,73 +903,10 @@
       } catch (err) {
         console.error("Failed to stream audio via proxy:", err);
         showToast("Error buffering track: " + err.message);
-        setTimeout(handleTrackEnded, 1500);
+        setTimeout(skipToNextTrack, 1500);
       } finally {
         isTrackLoading = false;
       }
-    }
-
-    // Push-to-Talk Live Voiceover Ducking Engine
-    function triggerLiveVoiceoverDucking(voData) {
-      try {
-        showToast(`⚡ Live Contributor Voiceover: @${voData.uploaderUsername}`);
-        
-        // Duck main radio audio down to 20%
-        duckMainVolume(0.2, 300);
-
-        // Convert voiceover base64 to blob URL
-        const byteChars = atob(voData.base64);
-        const byteNumbers = new Uint8Array(byteChars.length);
-        for (let i = 0; i < byteChars.length; i++) {
-          byteNumbers[i] = byteChars.charCodeAt(i);
-        }
-        const voBlob = new Blob([byteNumbers], { type: voData.mimeType || "audio/webm" });
-        const voUrl = URL.createObjectURL(voBlob);
-
-        voiceoverElement.src = voUrl;
-        voiceoverElement.volume = 1.0;
-        voiceoverElement.play().catch(err => {
-          console.warn("Voiceover playback error: ", err);
-          restoreMainVolume();
-        });
-      } catch (e) {
-        console.error("Voiceover ducking failed:", e);
-        restoreMainVolume();
-      }
-    }
-
-    function duckMainVolume(targetVolRatio, durationMs) {
-      const startVol = audioElement.volume;
-      const targetVol = userBaseVolume * targetVolRatio;
-      const steps = 15;
-      const stepInterval = durationMs / steps;
-      let currentStep = 0;
-
-      const duckTimer = setInterval(() => {
-        currentStep++;
-        audioElement.volume = Math.max(0.05, startVol + ((targetVol - startVol) * (currentStep / steps)));
-        if (currentStep >= steps) {
-          clearInterval(duckTimer);
-          audioElement.volume = targetVol;
-        }
-      }, stepInterval);
-    }
-
-    function restoreMainVolume() {
-      const startVol = audioElement.volume;
-      const targetVol = userBaseVolume;
-      const steps = 15;
-      const stepInterval = 300 / steps;
-      let currentStep = 0;
-
-      const restoreTimer = setInterval(() => {
-        currentStep++;
-        audioElement.volume = Math.min(1.0, startVol + ((targetVol - startVol) * (currentStep / steps)));
-        if (currentStep >= steps) {
-          clearInterval(restoreTimer);
-          audioElement.volume = targetVol;
-        }
-      }, stepInterval);
     }
 
     function togglePlayback() {
@@ -898,7 +941,6 @@
       }
     }
 
-    // HiDPI Canvas Visualizer
     function renderVisualizer() {
       const canvas = document.getElementById("visCanvas");
       const ctx = canvas.getContext("2d");
