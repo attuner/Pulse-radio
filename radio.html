@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PULSE RADIO // LIVE STREAM</title>
 
-  <!-- Native Web App & PWA Capabilities -->
+  <!-- PWA & Cross-Platform Display Capabilities -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pulse Radio">
@@ -30,9 +30,9 @@
 
     body {
       background: var(--bg-primary);
-      background-image: 
+      background-image:
         radial-gradient(circle at 50% 0%, rgba(121, 40, 202, 0.22) 0%, transparent 60%),
-        radial-gradient(circle at 10% 90%, rgba(0, 240, 255, 0.1) 0%, transparent 40%);
+        radial-gradient(circle at 10% 90%, rgba(0, 240, 255, 0.1) 0%, transparent 45%);
       color: var(--text-main);
       font-family: var(--font-ui);
       min-height: 100vh;
@@ -41,7 +41,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: calc(20px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+      padding: calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
       overflow-x: hidden;
     }
 
@@ -58,7 +58,7 @@
       top: calc(16px + env(safe-area-inset-top, 0px));
       background: rgba(0, 240, 255, 0.95);
       color: #000;
-      padding: 10px 20px;
+      padding: 10px 22px;
       border-radius: 999px;
       font-size: 0.85rem;
       font-weight: 700;
@@ -69,7 +69,7 @@
       z-index: 10000;
       display: none;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       min-height: 48px;
       animation: pillFloat 2s ease-in-out infinite;
     }
@@ -283,7 +283,7 @@
       height: 32px;
     }
 
-    /* High-contrast focus state for Smart TV remote controllers */
+    /* Spatial D-Pad High-Visibility Focus Outline */
     button:focus-visible,
     input:focus-visible,
     .unmute-pill:focus-visible {
@@ -430,7 +430,7 @@
     <canvas id="visCanvas" class="vis-canvas"></canvas>
 
     <div class="meta-panel">
-      <div id="currentTitle" class="track-title">Connecting to Broadcast Stream...</div>
+      <div id="currentTitle" class="track-title">Connecting to Broadcast Buffer...</div>
       <div id="currentContributor" class="track-contributor">--</div>
       <div id="currentTimestamp" class="track-time">--:--:--</div>
     </div>
@@ -439,7 +439,7 @@
       <div id="streamProgressBar" class="live-progress-bar"></div>
     </div>
 
-    <!-- RESTORED NAVIGATION CONTROLS: PREVIOUS, PLAY/PAUSE, NEXT -->
+    <!-- PREVIOUS, PLAY/PAUSE, NEXT HARDWARE CONTROLS -->
     <div class="controls">
       <button class="ctrl-btn" onclick="skipToPreviousTrack()" title="Previous Transmission" aria-label="Previous Track">
         <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
@@ -461,7 +461,7 @@
       <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.80" aria-label="Volume Slider" oninput="handleVolumeChange(event)">
     </div>
 
-    <!-- RECENTLY PLAYED HISTORY DRAWER (LAST 3 TRACKS) -->
+    <!-- RECENTLY PLAYED HISTORY DRAWER (LAST 3 TRACKS ONLY) -->
     <div class="queue-panel">
       <div class="queue-header">
         <h4>Recently Played (Last 3 Tracks)</h4>
@@ -473,7 +473,7 @@
 
   <div id="toastNotification" class="toast"></div>
 
-  <!-- PERSISTENT BROADCAST AUDIO ELEMENT (Direct Hardware Output) -->
+  <!-- NATIVE DIRECT HARDWARE AUDIO ELEMENT -->
   <audio id="radioAudio" playsinline webkit-playsinline preload="auto"></audio>
 
   <script>
@@ -483,8 +483,8 @@
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
     const POLL_INTERVAL = 15000;
 
-    // Detect Smart TV Environment to save CPU and disable audio resampling
-    const isTV = /SmartTV|Tizen|Web0S|BRAVIA|Android TV|CrKey|Roku/i.test(navigator.userAgent);
+    // Detect Smart TV Environment
+    const isTV = /SmartTV|Tizen|Web0S|BRAVIA|Android TV|CrKey|Roku|FireTV|AFTB|Hisense/i.test(navigator.userAgent);
 
     // Audio Engine State
     let audioCtx = null;
@@ -497,12 +497,13 @@
     let currentBlobUrl = null;
     let isTrackLoading = false;
     let activeFetchAbortController = null;
-    let userBaseVolume = 0.80; // Headroom ceiling to eliminate TV DAC clipping
+    let userBaseVolume = 0.80; // Safe ceiling to avoid Smart TV DAC clipping
+    let cachedManifestEtag = null;
 
-    // Ephemeral Client Listener ID
+    // Ephemeral Client Listener Session ID
     let listenerSessionId = localStorage.getItem("PULSE_RADIO_LISTENER_ID");
     if (!listenerSessionId) {
-      listenerSessionId = "listener_" + Math.random().toString(36).substring(2, 12);
+      listenerSessionId = "lstnr_" + Math.random().toString(36).substring(2, 12);
       localStorage.setItem("PULSE_RADIO_LISTENER_ID", listenerSessionId);
     }
 
@@ -518,8 +519,13 @@
       initAudioElementListeners();
       initVisibilityChangeHandler();
       setupGlobalAutoplayUnlockListener();
-      
-      // Load manifest first without eager AudioContext creation (Safari-safe)
+
+      // On TVs, hide canvas immediately to preserve CPU
+      if (isTV) {
+        const c = document.getElementById("visCanvas");
+        if (c) c.style.display = "none";
+      }
+
       fetchLiveManifest();
       pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
     });
@@ -531,22 +537,24 @@
       setTimeout(() => { toast.classList.remove("visible"); }, 4000);
     }
 
-    // Lazy initialization of Web Audio API solely upon confirmed user interaction (Safari/WebKit safe)
+    /**
+     * Lazy Safari/WebKit AudioContext Lifecycle Manager
+     */
     function ensureAudioContextReady() {
       if (!audioCtxInitialized) {
         try {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          
-          // Connect analyser for visualizer only if not on low-power TV
+
+          // Isolate frequency analysis from acoustic output
           if (!isTV && !audioSource) {
             try {
               audioSource = audioCtx.createMediaElementSource(audioElement);
               analyser = audioCtx.createAnalyser();
               analyser.fftSize = 256;
               analyser.smoothingTimeConstant = 0.85;
-              
-              // Audio Pipeline Isolation: connect source to analyser only (NOT to destination)
-              // to prevent sample-rate resampling mismatches and DAC clipping on external speakers
+
+              // Connect to analyser ONLY - DO NOT connect to audioCtx.destination
+              // This guarantees zero WebKit muting bugs and zero Smart TV sample-rate distortion
               audioSource.connect(analyser);
               renderVisualizer();
             } catch (dspErr) {
@@ -555,7 +563,7 @@
           }
           audioCtxInitialized = true;
         } catch (e) {
-          console.warn("AudioContext setup deferred:", e);
+          console.warn("AudioContext initialization deferred:", e);
         }
       }
 
@@ -584,7 +592,7 @@
       if (audioElement.paused && currentQueue.length > 0) {
         audioElement.play().catch(err => {
           if (err.name !== "AbortError") {
-            console.warn("Playback unlock attempt:", err);
+            console.warn("Unlock play attempt notice:", err);
           }
         });
       }
@@ -592,34 +600,34 @@
 
     function initAudioElementListeners() {
       audioElement.addEventListener("ended", handleTrackEnded);
-      
+
       audioElement.addEventListener("timeupdate", () => {
         if (!audioElement.duration) return;
         const progress = (audioElement.currentTime / audioElement.duration) * 100;
         document.getElementById("streamProgressBar").style.width = progress + "%";
-        
+
         const curSec = Math.floor(audioElement.currentTime);
         const durSec = Math.floor(audioElement.duration);
-        document.getElementById("currentTimestamp").textContent = 
+        document.getElementById("currentTimestamp").textContent =
           `${formatTime(curSec)} / ${formatTime(durSec)}`;
       });
 
-      audioElement.addEventListener("error", (e) => {
+      audioElement.addEventListener("error", () => {
         const err = audioElement.error;
         let details = "Media Error";
         if (err) {
           switch (err.code) {
-            case MediaError.MEDIA_ERR_ABORTED: return; // Do not skip on abort
+            case MediaError.MEDIA_ERR_ABORTED: return; // Expected on skip
             case MediaError.MEDIA_ERR_NETWORK: details = "Network error"; break;
-            case MediaError.MEDIA_ERR_DECODE: details = "Decode error"; break;
+            case MediaError.MEDIA_ERR_DECODE: details = "Hardware decode error"; break;
             case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: details = "Format unsupported"; break;
           }
         }
-        console.warn("Audio element error:", details);
+        console.warn("Audio element notification:", details);
         setTimeout(handleTrackEnded, 1500);
       });
 
-      // Synchronize playback UI strictly with native media events
+      // Synchronize state strictly with native playback events
       audioElement.addEventListener("playing", () => {
         isPlaying = true;
         updatePlayStateUI();
@@ -628,6 +636,10 @@
       audioElement.addEventListener("pause", () => {
         isPlaying = false;
         updatePlayStateUI();
+      });
+
+      audioElement.addEventListener("waiting", () => {
+        document.getElementById("currentTitle").textContent = "Buffering broadcast stream...";
       });
     }
 
@@ -651,14 +663,26 @@
 
     async function fetchLiveManifest() {
       try {
-        const endpoint = `${GAS_ENDPOINT_URL}?action=getLiveManifest&listenerId=${encodeURIComponent(listenerSessionId)}`;
+        let endpoint = `${GAS_ENDPOINT_URL}?action=getLiveManifest&listenerId=${encodeURIComponent(listenerSessionId)}`;
+        if (cachedManifestEtag) {
+          endpoint += `&etag=${encodeURIComponent(cachedManifestEtag)}`;
+        }
+
         const res = await fetch(endpoint, { method: "GET", mode: "cors" });
         const json = await res.json();
 
         if (json.success && json.data) {
           if (json.data.activeListeners !== undefined) {
-            document.getElementById("listenerReadout").textContent = 
+            document.getElementById("listenerReadout").textContent =
               `LISTENERS: ${json.data.activeListeners} ACTIVE`;
+          }
+
+          if (json.data.notModified) {
+            return;
+          }
+
+          if (json.data.etag) {
+            cachedManifestEtag = json.data.etag;
           }
 
           if (json.data.manifest) {
@@ -666,8 +690,7 @@
           }
         }
       } catch (err) {
-        // Keep polling quiet without spamming UI
-        console.warn("Manifest sync notice:", err.message);
+        console.warn("Manifest background polling note:", err.message);
       }
     }
 
@@ -691,7 +714,7 @@
         newlyAddedTracks.forEach(newTrack => {
           priorityQueue.push(newTrack);
         });
-        showToast("New transmission received! Up next immediately after current track.");
+        showToast("New broadcast received! Up next immediately after current track.");
       }
 
       const activeContentId = currentQueue[currentTrackIndex]?.contentId;
@@ -785,11 +808,13 @@
       });
     }
 
-    // Safari/WebKit Safe Audio Loader & Memory Audit
+    /**
+     * Safari/WebKit-Safe Audio Loader & Memory Leak Eliminator
+     */
     async function loadAndPlayTrack(track) {
       if (!track) return;
-      
-      // Cancel prior pending fetch request if skipping rapidly
+
+      // Abort any pending download to prevent race conditions during rapid skips
       if (activeFetchAbortController) {
         activeFetchAbortController.abort();
       }
@@ -801,26 +826,27 @@
 
       try {
         const streamUrl = `${GAS_ENDPOINT_URL}?action=streamAudio&fileId=${encodeURIComponent(track.fileId)}`;
-        const res = await fetch(streamUrl, { 
-          method: "GET", 
+        const res = await fetch(streamUrl, {
+          method: "GET",
           mode: "cors",
           signal: activeFetchAbortController.signal
         });
         const json = await res.json();
 
         if (!json.success || !json.base64) {
-          throw new Error(json.error || "Backend returned invalid audio stream");
+          throw new Error(json.error || "Backend stream returned invalid audio payload");
         }
 
+        // Fast chunk-safe binary assembly
         const byteCharacters = atob(json.base64);
         const byteNumbers = new Uint8Array(byteCharacters.length);
         for (let i = 0; i < byteCharacters.length; i++) {
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
 
-        const audioBlob = new Blob([byteNumbers], { type: json.mimeType || "audio/webm" });
+        const audioBlob = new Blob([byteNumbers], { type: json.mimeType || track.mimeType || "audio/webm" });
 
-        // Revoke prior Object URL to eliminate memory leaks
+        // Revoke previous Blob URL immediately
         if (currentBlobUrl) {
           URL.revokeObjectURL(currentBlobUrl);
           currentBlobUrl = null;
@@ -828,7 +854,7 @@
 
         currentBlobUrl = URL.createObjectURL(audioBlob);
 
-        // Safari-safe assignment: pause before replacing src and reloading
+        // WebKit/Safari-Safe assignment: Pause and clear element state
         audioElement.pause();
         audioElement.src = currentBlobUrl;
         audioElement.load();
@@ -839,12 +865,14 @@
         if (playPromise !== undefined) {
           playPromise.catch(error => {
             if (error.name === "AbortError") {
-              // Ignore expected abort from track transitions
+              // Expected when user skips ahead while buffering
               return;
             }
-            console.warn("Playback gesture needed. Showing unmute banner.");
+            console.warn("Unmuted autoplay restricted by browser policy. Displaying unmute pill.");
             audioElement.muted = true;
-            audioElement.play().catch(e => console.warn("Muted playback attempt:", e));
+            audioElement.play().catch(e => {
+              if (e.name !== "AbortError") console.warn("Muted playback attempt:", e);
+            });
             document.getElementById("unmutePill").style.display = "inline-flex";
           });
         }
@@ -853,9 +881,9 @@
         syncMediaSession(track);
       } catch (err) {
         if (err.name === "AbortError") {
-          return; // Fetch aborted due to rapid skip
+          return; // Skip caused intentional abort
         }
-        console.warn("Buffer notice:", err.message);
+        console.warn("Streaming buffer notice:", err.message);
         setTimeout(handleTrackEnded, 1500);
       } finally {
         isTrackLoading = false;
@@ -864,7 +892,7 @@
 
     function togglePlayback() {
       ensureAudioContextReady();
-      
+
       if (audioElement.muted) {
         audioElement.muted = false;
       }
@@ -872,7 +900,7 @@
       if (audioElement.paused) {
         audioElement.play().catch(err => {
           if (err.name !== "AbortError") {
-            console.warn("Play toggle:", err);
+            console.warn("Playback toggle notice:", err);
           }
         });
       } else {
@@ -899,11 +927,11 @@
     }
 
     function renderVisualizer() {
-      if (isTV || !analyser) return; // Completely disabled on TV browsers to free 100% CPU
+      if (isTV || !analyser) return; // Never run Canvas rendering loop on Smart TVs
 
       const canvas = document.getElementById("visCanvas");
       const ctx = canvas.getContext("2d");
-      
+
       const dpr = window.devicePixelRatio || 1;
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
@@ -914,7 +942,7 @@
 
       function draw() {
         animationFrame = requestAnimationFrame(draw);
-        if (document.hidden) return;
+        if (document.hidden) return; // Conserve battery when tab is backgrounded
 
         analyser.getByteFrequencyData(dataArray);
         ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
@@ -925,7 +953,7 @@
 
         for (let i = 0; i < barCount; i++) {
           const barHeight = (dataArray[i * 2] / 255) * canvas.clientHeight * 0.85;
-          
+
           const gradient = ctx.createLinearGradient(0, canvas.clientHeight, 0, 0);
           gradient.addColorStop(0, "#7928CA");
           gradient.addColorStop(1, "#00F0FF");

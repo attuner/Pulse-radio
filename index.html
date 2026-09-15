@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PULSE RADIO // CONTRIBUTOR STUDIO</title>
-  
-  <!-- Native Web App & PWA Capabilities -->
+
+  <!-- PWA & Hardware Display Capabilities -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pulse Studio">
@@ -19,7 +19,7 @@
       --panel-bg: rgba(22, 27, 34, 0.85);
       --panel-border: rgba(255, 255, 255, 0.08);
       --accent-cyan: #00F0FF;
-      --accent-cyan-dim: rgba(0, 240, 255, 0.15);
+      --accent-cyan-dim: rgba(0, 240, 255, 0.12);
       --accent-violet: #7928CA;
       --accent-crimson: #FF3B30;
       --text-primary: #F0F6FC;
@@ -32,9 +32,9 @@
 
     body {
       background-color: var(--bg-primary);
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(121, 40, 202, 0.14) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 40%);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(121, 40, 202, 0.14) 0%, transparent 45%),
+        radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 45%);
       color: var(--text-primary);
       font-family: var(--font-stack);
       min-height: 100vh;
@@ -42,7 +42,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: calc(20px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+      padding: calc(16px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+      overflow-x: hidden;
     }
 
     .container {
@@ -111,7 +112,7 @@
       border-radius: 16px;
       padding: clamp(20px, 4vw, 32px);
       margin-bottom: 24px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     }
 
     .tabs {
@@ -142,7 +143,7 @@
       color: var(--accent-cyan);
     }
 
-    /* High-contrast focus state for Smart TV remote controllers */
+    /* Smart TV and Spatial D-Pad High-Visibility Focus Outline */
     button:focus-visible,
     input:focus-visible,
     select:focus-visible,
@@ -258,7 +259,7 @@
       border-radius: 6px;
       color: var(--text-muted);
       font-size: 0.75rem;
-      min-height: 40px;
+      min-height: 44px;
       cursor: pointer;
     }
 
@@ -350,6 +351,8 @@
     .rec-circle-btn {
       width: 80px;
       height: 80px;
+      min-width: 80px;
+      min-height: 80px;
       border-radius: 50%;
       background: var(--bg-surface);
       border: 2px solid var(--accent-crimson);
@@ -496,30 +499,30 @@
 
     <!-- AUTHENTICATION CARD -->
     <div id="authPanel" class="card">
-      <div class="tabs">
-        <button id="tabLoginBtn" class="tab-btn active" onclick="switchAuthTab('login')">SIGN IN</button>
-        <button id="tabRegisterBtn" class="tab-btn" onclick="switchAuthTab('register')">CREATE CONTRIBUTOR ACCOUNT</button>
+      <div class="tabs" role="tablist">
+        <button id="tabLoginBtn" class="tab-btn active" role="tab" aria-selected="true" onclick="switchAuthTab('login')">SIGN IN</button>
+        <button id="tabRegisterBtn" class="tab-btn" role="tab" aria-selected="false" onclick="switchAuthTab('register')">CREATE CONTRIBUTOR ACCOUNT</button>
       </div>
 
       <form id="authForm" onsubmit="handleAuthSubmit(event)">
         <div id="fullNameGroup" class="form-group" style="display: none;">
           <label for="fullName">Full Name</label>
-          <input type="text" id="fullName" placeholder="e.g. Alex Mercer">
+          <input type="text" id="fullName" autocomplete="name" placeholder="e.g. Alex Mercer">
         </div>
 
         <div class="form-group">
           <label for="username">Contributor Username</label>
-          <input type="text" id="username" required placeholder="alphanumeric, no spaces">
+          <input type="text" id="username" required autocomplete="username" placeholder="lowercase letters, numbers, underscores">
         </div>
 
         <div class="form-group">
           <label for="password">Passphrase</label>
-          <input type="password" id="password" required placeholder="Min 8 chars, 1 upper, 1 num, 1 sym">
+          <input type="password" id="password" required autocomplete="current-password" placeholder="Min 8 chars: 1 upper, 1 num, 1 sym">
         </div>
 
         <div id="confirmPassGroup" class="form-group" style="display: none;">
           <label for="confirmPassword">Confirm Passphrase</label>
-          <input type="password" id="confirmPassword" placeholder="Re-enter your passphrase">
+          <input type="password" id="confirmPassword" autocomplete="new-password" placeholder="Re-enter your passphrase">
         </div>
 
         <button type="submit" id="authSubmitBtn" class="btn btn-primary">
@@ -528,7 +531,7 @@
       </form>
     </div>
 
-    <!-- CONTRIBUTOR STUDIO DASHBOARD CARD -->
+    <!-- CONTRIBUTOR STUDIO DASHBOARD -->
     <div id="studioPanel" class="card" style="display: none;">
       <div class="user-banner">
         <div class="user-info">
@@ -538,18 +541,18 @@
         <button class="logout-btn" onclick="logout()">LOG OUT</button>
       </div>
 
-      <!-- 50-SLOT CAPACITY INDICATOR -->
+      <!-- 50-SLOT CAPACITY BADGE -->
       <div class="capacity-banner">
         <span>STORAGE BUFFER: 50 TRACKS MAX</span>
         <span style="color:var(--accent-cyan);">FIFO ACTIVE</span>
       </div>
 
-      <div class="tabs">
-        <button id="tabMicBtn" class="tab-btn active" onclick="switchStudioTab('mic')">LIVE MIC CONSOLE</button>
-        <button id="tabFileBtn" class="tab-btn" onclick="switchStudioTab('file')">AUDIO FILE INGEST</button>
+      <div class="tabs" role="tablist">
+        <button id="tabMicBtn" class="tab-btn active" role="tab" aria-selected="true" onclick="switchStudioTab('mic')">LIVE MIC CONSOLE</button>
+        <button id="tabFileBtn" class="tab-btn" role="tab" aria-selected="false" onclick="switchStudioTab('file')">AUDIO FILE INGEST</button>
       </div>
 
-      <!-- TAB 1: LIVE MIC RECORDER -->
+      <!-- CONSOLE 1: HARDWARE MICROPHONE RECORDER -->
       <div id="micConsole">
         <div class="form-group">
           <label for="micSelect">Audio Input Hardware</label>
@@ -557,12 +560,12 @@
         </div>
 
         <div class="rec-studio">
-          <button id="recordTrigger" class="rec-circle-btn" onclick="toggleRecording()" aria-label="Toggle Recording">
+          <button id="recordTrigger" class="rec-circle-btn" onclick="toggleRecording()" aria-label="Start Recording">
             <div class="rec-circle-inner"></div>
           </button>
           <span id="clipIndicator" class="clip-badge">0 dBFS PEAK</span>
           <div class="timecode" id="recTimecode">00:00:00</div>
-          
+
           <div class="meter-container">
             <div id="meterLevel" class="meter-bar"></div>
           </div>
@@ -576,9 +579,9 @@
         </div>
       </div>
 
-      <!-- TAB 2: FILE INGEST -->
+      <!-- CONSOLE 2: DRAG-AND-DROP FILE INGEST -->
       <div id="fileConsole" style="display: none;">
-        <div class="dropzone" id="dropArea" tabindex="0" onclick="document.getElementById('audioFileInput').click()" onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('audioFileInput').click()">
+        <div class="dropzone" id="dropArea" tabindex="0" role="button" aria-label="Drop audio file or click to select" onclick="document.getElementById('audioFileInput').click()" onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('audioFileInput').click()">
           <svg style="width:48px;height:48px;fill:var(--text-muted);margin-bottom:12px;" viewBox="0 0 24 24">
             <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
           </svg>
@@ -588,7 +591,7 @@
         </div>
       </div>
 
-      <!-- TAKE PREVIEW & METADATA SUBMISSION -->
+      <!-- AUDITION REVIEW & INGESTION FORM -->
       <div id="submissionContainer" style="margin-top: 24px;">
         <div id="previewBox" class="preview-player">
           <label>Review Audio Take</label>
@@ -597,7 +600,7 @@
 
         <div class="form-group" style="margin-top: 16px;">
           <label for="trackTitle">Broadcast Transmission Title</label>
-          <input type="text" id="trackTitle" placeholder="e.g. Midnight Transmission Vol. 1">
+          <input type="text" id="trackTitle" placeholder="e.g. Transmission #42: Ambient Horizons">
         </div>
 
         <button id="publishBtn" class="btn btn-primary" onclick="initiateUploadPipeline()" disabled>
@@ -629,8 +632,7 @@
      * ENDPOINT CONFIGURATION: Paste your deployed Google Apps Script URL below
      */
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
-    const CLIENT_SALT = "::pulse_radio_salt_2026";
-    const MAX_FILE_SIZE = 20 * 1024 * 1024;
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB Hard Ceiling
 
     // State Variables
     let currentAuthMode = "login";
@@ -662,10 +664,13 @@
       setTimeout(() => { box.style.display = "none"; }, 6000);
     }
 
-    async function computeSha256(text) {
+    /**
+     * Web Cryptography API: Client-Side SHA-256 Hasher
+     */
+    async function computeClientSha256(plaintext, salt) {
       const encoder = new TextEncoder();
-      const data = encoder.encode(text + CLIENT_SALT);
-      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const payload = encoder.encode(plaintext + "::" + salt);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", payload);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
     }
@@ -684,26 +689,34 @@
 
     function switchAuthTab(mode) {
       currentAuthMode = mode;
-      document.getElementById("tabLoginBtn").className = mode === "login" ? "tab-btn active" : "tab-btn";
-      document.getElementById("tabRegisterBtn").className = mode === "register" ? "tab-btn active" : "tab-btn";
-      document.getElementById("fullNameGroup").style.display = mode === "register" ? "block" : "none";
-      document.getElementById("confirmPassGroup").style.display = mode === "register" ? "block" : "none";
-      document.getElementById("authSubmitBtn").querySelector("span").textContent = 
-        mode === "register" ? "REGISTER CONTRIBUTOR" : "SIGN IN AS CONTRIBUTOR";
+      const isLogin = mode === "login";
+      document.getElementById("tabLoginBtn").className = isLogin ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabLoginBtn").setAttribute("aria-selected", isLogin);
+      document.getElementById("tabRegisterBtn").className = !isLogin ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabRegisterBtn").setAttribute("aria-selected", !isLogin);
+      document.getElementById("fullNameGroup").style.display = isLogin ? "none" : "block";
+      document.getElementById("confirmPassGroup").style.display = isLogin ? "none" : "block";
+      document.getElementById("authSubmitBtn").querySelector("span").textContent =
+        isLogin ? "SIGN IN AS CONTRIBUTOR" : "REGISTER CONTRIBUTOR";
     }
 
     async function handleAuthSubmit(e) {
       e.preventDefault();
-      const user = document.getElementById("username").value.trim();
+      const user = document.getElementById("username").value.trim().toLowerCase();
       const pass = document.getElementById("password").value;
       const submitBtn = document.getElementById("authSubmitBtn");
+
+      if (!/^[a-z0-9_]{3,20}$/.test(user)) {
+        showAlert("Username must be 3-20 lowercase alphanumeric characters or underscores.");
+        return;
+      }
 
       if (currentAuthMode === "register") {
         const fullName = document.getElementById("fullName").value.trim();
         const confPass = document.getElementById("confirmPassword").value;
 
-        if (!/^[a-zA-Z0-9_]{3,20}$/.test(user)) {
-          showAlert("Username must be 3-20 characters without spaces.");
+        if (!fullName) {
+          showAlert("Full Contributor Name is required.");
           return;
         }
         if (pass.length < 8 || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass) || !/[^a-zA-Z0-9]/.test(pass)) {
@@ -716,13 +729,14 @@
         }
 
         submitBtn.disabled = true;
-        const passHash = await computeSha256(pass);
-        
+
         try {
+          // Dynamic client-side pre-hashing using username seed
+          const clientHash = await computeClientSha256(pass, user + "_registration_seed");
           const resp = await executeGasRequest({
             action: "registerUser",
             username: user,
-            passwordHash: passHash,
+            clientHash: clientHash,
             fullName: fullName
           });
 
@@ -734,19 +748,27 @@
             showAlert(resp.error || "Registration failed.");
           }
         } catch (err) {
-          showAlert("Network failure contacting backend.");
+          showAlert("Network failure contacting backend during registration.");
         } finally {
           submitBtn.disabled = false;
         }
       } else {
         submitBtn.disabled = true;
-        const passHash = await computeSha256(pass);
 
         try {
+          // Retrieve user-specific salt challenge from backend
+          const saltResp = await executeGasRequest({ action: "getSalt", username: user }, "GET");
+          if (!saltResp.success || !saltResp.data.salt) {
+            showAlert(saltResp.error || "Failed to retrieve user salt challenge.");
+            submitBtn.disabled = false;
+            return;
+          }
+
+          const clientHash = await computeClientSha256(pass, saltResp.data.salt);
           const resp = await executeGasRequest({
             action: "authenticateUser",
             username: user,
-            passwordHash: passHash
+            clientHash: clientHash
           });
 
           if (resp.success) {
@@ -773,28 +795,42 @@
     }
 
     function logout() {
+      teardownHardwareTracks();
       if (activePreviewBlobUrl) {
         URL.revokeObjectURL(activePreviewBlobUrl);
         activePreviewBlobUrl = null;
       }
       localStorage.removeItem("PULSE_RADIO_AUTH_SESSION");
       currentUserSession = null;
-      if (audioStream) audioStream.getTracks().forEach(t => t.stop());
       location.reload();
     }
 
     function switchStudioTab(tab) {
-      document.getElementById("tabMicBtn").className = tab === "mic" ? "tab-btn active" : "tab-btn";
-      document.getElementById("tabFileBtn").className = tab === "file" ? "tab-btn active" : "tab-btn";
-      document.getElementById("micConsole").style.display = tab === "mic" ? "block" : "none";
-      document.getElementById("fileConsole").style.display = tab === "file" ? "block" : "none";
+      const isMic = tab === "mic";
+      document.getElementById("tabMicBtn").className = isMic ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabMicBtn").setAttribute("aria-selected", isMic);
+      document.getElementById("tabFileBtn").className = !isMic ? "tab-btn active" : "tab-btn";
+      document.getElementById("tabFileBtn").setAttribute("aria-selected", !isMic);
+      document.getElementById("micConsole").style.display = isMic ? "block" : "none";
+      document.getElementById("fileConsole").style.display = !isMic ? "block" : "none";
+    }
+
+    function teardownHardwareTracks() {
+      if (audioStream) {
+        audioStream.getTracks().forEach(track => {
+          track.stop();
+        });
+        audioStream = null;
+      }
     }
 
     async function initMicrophoneHardware() {
       const select = document.getElementById("micSelect");
       select.innerHTML = "";
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        tempStream.getTracks().forEach(t => t.stop());
+
         const devices = await navigator.mediaDevices.enumerateDevices();
         devices.filter(d => d.kind === "audioinput").forEach((d, idx) => {
           const opt = document.createElement("option");
@@ -803,19 +839,16 @@
           select.appendChild(opt);
         });
       } catch (err) {
-        showAlert("Microphone permission denied. Enable mic in browser settings.");
+        showAlert("Microphone permission denied. Enable mic access in your browser settings.");
       }
     }
 
     async function switchMicrophoneDevice() {
       if (mediaRecorder && mediaRecorder.state === "recording") {
-        showAlert("Stop recording prior to switching hardware devices.");
+        showAlert("Please stop the active recording before switching hardware inputs.");
         return;
       }
-      if (audioStream) {
-        audioStream.getTracks().forEach(t => t.stop());
-      }
-      audioStream = null;
+      teardownHardwareTracks();
     }
 
     async function toggleRecording() {
@@ -826,6 +859,7 @@
 
     async function startRecording() {
       try {
+        teardownHardwareTracks();
         const deviceId = document.getElementById("micSelect").value;
         const constraints = {
           audio: {
@@ -839,7 +873,7 @@
 
         audioStream = await navigator.mediaDevices.getUserMedia(constraints);
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
+
         const sourceNode = audioContext.createMediaStreamSource(audioStream);
         analyserNode = audioContext.createAnalyser();
         analyserNode.fftSize = 256;
@@ -854,17 +888,17 @@
         mediaRecorder = new MediaRecorder(audioStream, { mimeType });
 
         mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) recordedChunks.push(e.data);
+          if (e.data && e.data.size > 0) recordedChunks.push(e.data);
         };
 
         mediaRecorder.onstop = async () => {
           processedBlob = new Blob(recordedChunks, { type: mimeType });
-          
+
           if (activePreviewBlobUrl) {
             URL.revokeObjectURL(activePreviewBlobUrl);
           }
           activePreviewBlobUrl = URL.createObjectURL(processedBlob);
-          
+
           const previewAudio = document.getElementById("previewAudio");
           previewAudio.src = activePreviewBlobUrl;
           document.getElementById("previewBox").style.display = "block";
@@ -886,7 +920,7 @@
 
         renderScope();
       } catch (err) {
-        showAlert("Failed to start audio engine: " + err.message);
+        showAlert("Failed to start audio recording engine: " + err.message);
       }
     }
 
@@ -911,9 +945,8 @@
       mediaRecorder.stop();
       clearInterval(recTimerId);
       cancelAnimationFrame(animationFrameId);
-      if (audioStream) {
-        audioStream.getTracks().forEach(t => t.stop());
-      }
+      teardownHardwareTracks();
+
       document.getElementById("recordTrigger").classList.remove("recording");
       document.getElementById("pauseRecBtn").disabled = true;
       document.getElementById("stopRecBtn").disabled = true;
@@ -960,7 +993,7 @@
           clip.textContent = `${Math.round(peak * 100)}% PEAK`;
         }
 
-        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.lineWidth = 2;
         ctx.strokeStyle = "#00F0FF";
@@ -1007,22 +1040,22 @@
     }
 
     async function processSelectedFile(file) {
-      if (!file.type.startsWith("audio/")) {
-        showAlert("Unsupported format. Select an audio file.");
+      if (!file.type.startsWith("audio/") && !file.name.match(/\.(mp3|wav|ogg|webm|m4a|flac)$/i)) {
+        showAlert("Unsupported file format. Please upload an authentic audio file.");
         return;
       }
       if (file.size > MAX_FILE_SIZE) {
-        showAlert("File exceeds strict 20MB limit.");
+        showAlert("File exceeds the strict 20MB limit.");
         return;
       }
 
       processedBlob = file;
-      
+
       if (activePreviewBlobUrl) {
         URL.revokeObjectURL(activePreviewBlobUrl);
       }
       activePreviewBlobUrl = URL.createObjectURL(file);
-      
+
       const previewAudio = document.getElementById("previewAudio");
       previewAudio.src = activePreviewBlobUrl;
       document.getElementById("previewBox").style.display = "block";
@@ -1035,9 +1068,23 @@
       });
     }
 
+    /**
+     * Chunked Base64 Encoder: Prevents call-stack overflows on 20MB buffers
+     */
+    function arrayBufferToBase64(buffer) {
+      let binary = "";
+      const bytes = new Uint8Array(buffer);
+      const len = bytes.byteLength;
+      const chunkSize = 8192; // 8KB Safe stack chunk
+      for (let i = 0; i < len; i += chunkSize) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, len)));
+      }
+      return btoa(binary);
+    }
+
     async function initiateUploadPipeline() {
       if (!processedBlob) {
-        showAlert("No audio take found to publish.");
+        showAlert("No audio recording or file available to publish.");
         return;
       }
       const titleInput = document.getElementById("trackTitle");
@@ -1059,20 +1106,13 @@
       }
 
       try {
-        setProgress("Stage 1/4: Reading ArrayBuffer...", 20);
+        setProgress("Stage 1/4: Reading binary buffer...", 20);
         const arrayBuffer = await processedBlob.arrayBuffer();
 
-        setProgress("Stage 2/4: Encoding Base64 Binary Stream...", 45);
-        let binaryString = "";
-        const bytes = new Uint8Array(arrayBuffer);
-        const len = bytes.byteLength;
-        const chunkSize = 0x8000;
-        for (let i = 0; i < len; i += chunkSize) {
-          binaryString += String.fromCharCode.apply(null, bytes.subarray(i, Math.min(i + chunkSize, len)));
-        }
-        const base64Data = btoa(binaryString);
+        setProgress("Stage 2/4: Chunk-encoding Base64 stream...", 45);
+        const base64Data = arrayBufferToBase64(arrayBuffer);
 
-        setProgress("Stage 3/4: Dispatching Payload to Cloud...", 70);
+        setProgress("Stage 3/4: Transmitting payload to serverless cloud...", 70);
         const payload = {
           action: "uploadAudioTrack",
           auth: {
@@ -1081,7 +1121,7 @@
           },
           metadata: {
             title: title,
-            fileName: processedBlob.name || "mic_recording.webm",
+            fileName: processedBlob.name || "mic_broadcast.webm",
             mimeType: processedBlob.type || "audio/webm",
             durationSeconds: Math.round(processedDuration),
             sizeBytes: processedBlob.size
@@ -1089,12 +1129,12 @@
           fileData: base64Data
         };
 
-        setProgress("Stage 4/4: Executing Drive FIFO (Cap: 50) & Sheet Sync...", 90);
+        setProgress("Stage 4/4: Executing atomic FIFO rotation...", 90);
         const response = await executeGasRequest(payload);
 
         if (response.success) {
           setProgress("Broadcast Published Successfully!", 100);
-          showAlert("Transmission is live on the broadcast stream!", false);
+          showAlert("Transmission is live in the 50-track buffer!", false);
           setTimeout(() => {
             location.reload();
           }, 2000);
@@ -1103,21 +1143,27 @@
           publishBtn.disabled = false;
         }
       } catch (err) {
-        showAlert("Upload transmission failure: " + err.message);
+        showAlert("Upload transmission error: " + err.message);
         publishBtn.disabled = false;
       }
     }
 
-    async function executeGasRequest(data, maxRetries = 3) {
-      let delay = 2000;
+    async function executeGasRequest(data, method = "POST", maxRetries = 3) {
+      let delay = 1500;
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
-          const res = await fetch(GAS_ENDPOINT_URL, {
-            method: "POST",
-            mode: "cors",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(data)
-          });
+          let url = GAS_ENDPOINT_URL;
+          let options = { method: method, mode: "cors" };
+
+          if (method === "GET") {
+            const params = new URLSearchParams(data).toString();
+            url += (url.includes("?") ? "&" : "?") + params;
+          } else {
+            options.headers = { "Content-Type": "text/plain;charset=utf-8" };
+            options.body = JSON.stringify(data);
+          }
+
+          const res = await fetch(url, options);
           return await res.json();
         } catch (err) {
           if (attempt === maxRetries) throw err;
