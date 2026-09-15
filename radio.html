@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PULSE RADIO // LIVE STREAM</title>
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+
+  <!-- Native Web App & PWA Capabilities -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pulse Radio">
+  <meta name="theme-color" content="#090A0F">
+  <meta name="mobile-web-app-capable" content="yes">
+
   <style>
     :root {
       --bg-primary: #090A0F;
-      --bg-card: rgba(22, 27, 34, 0.75);
+      --bg-card: rgba(22, 27, 34, 0.85);
       --border-line: rgba(255, 255, 255, 0.08);
       --accent-cyan: #00F0FF;
       --accent-violet: #7928CA;
@@ -24,22 +31,23 @@
     body {
       background: var(--bg-primary);
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(121, 40, 202, 0.2) 0%, transparent 60%),
+        radial-gradient(circle at 50% 0%, rgba(121, 40, 202, 0.22) 0%, transparent 60%),
         radial-gradient(circle at 10% 90%, rgba(0, 240, 255, 0.1) 0%, transparent 40%);
       color: var(--text-main);
       font-family: var(--font-ui);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 24px 16px;
+      padding: calc(20px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
       overflow-x: hidden;
     }
 
     .container {
       width: 100%;
-      max-width: 800px;
+      max-width: 780px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -47,21 +55,22 @@
 
     .unmute-pill {
       position: fixed;
-      top: 16px;
-      background: rgba(0, 240, 255, 0.9);
+      top: calc(16px + env(safe-area-inset-top, 0px));
+      background: rgba(0, 240, 255, 0.95);
       color: #000;
-      padding: 8px 18px;
+      padding: 10px 20px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 700;
       font-family: var(--font-mono);
       letter-spacing: 0.5px;
-      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.4);
+      box-shadow: 0 4px 24px rgba(0, 240, 255, 0.5);
       cursor: pointer;
       z-index: 10000;
       display: none;
       align-items: center;
       gap: 6px;
+      min-height: 48px;
       animation: pillFloat 2s ease-in-out infinite;
     }
 
@@ -75,14 +84,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .live-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 6px 14px;
       background: rgba(255, 59, 48, 0.15);
       border: 1px solid var(--accent-crimson);
       border-radius: 999px;
@@ -117,9 +126,9 @@
 
     .deck-container {
       position: relative;
-      width: 280px;
-      height: 280px;
-      margin: 20px 0;
+      width: clamp(220px, 45vw, 280px);
+      height: clamp(220px, 45vw, 280px);
+      margin: 16px 0;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -152,8 +161,8 @@
     }
 
     .vinyl-label {
-      width: 100px;
-      height: 100px;
+      width: 36%;
+      height: 36%;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
       border: 4px solid #000;
@@ -172,19 +181,19 @@
 
     .vis-canvas {
       width: 100%;
-      height: 120px;
+      height: 110px;
       margin: 12px 0;
       border-radius: 8px;
     }
 
     .meta-panel {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       width: 100%;
     }
 
     .track-title {
-      font-size: 1.4rem;
+      font-size: clamp(1.15rem, 3.5vw, 1.45rem);
       font-weight: 700;
       letter-spacing: 0.5px;
       margin-bottom: 6px;
@@ -220,21 +229,22 @@
       transition: width 0.25s linear;
     }
 
-    /* RESTORED PREVIOUS & NEXT CONTROLS */
     .controls {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 24px;
-      margin-bottom: 32px;
+      gap: clamp(16px, 4vw, 24px);
+      margin-bottom: 28px;
     }
 
     .ctrl-btn {
       background: var(--bg-card);
       border: 1px solid var(--border-line);
       color: var(--text-main);
-      width: 54px;
-      height: 54px;
+      width: 56px;
+      height: 56px;
+      min-width: 48px;
+      min-height: 48px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -249,8 +259,8 @@
     }
 
     .ctrl-btn.btn-play {
-      width: 72px;
-      height: 72px;
+      width: 76px;
+      height: 76px;
       background: var(--accent-cyan);
       color: #000;
       border: none;
@@ -273,42 +283,50 @@
       height: 32px;
     }
 
+    /* High-contrast focus state for Smart TV remote controllers */
+    button:focus-visible,
+    input:focus-visible,
+    .unmute-pill:focus-visible {
+      outline: 3px solid var(--accent-cyan) !important;
+      outline-offset: 4px !important;
+    }
+
     .volume-group {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       width: 100%;
-      max-width: 260px;
+      max-width: 280px;
     }
 
     .volume-slider {
       flex: 1;
-      height: 4px;
+      height: 6px;
       -webkit-appearance: none;
       background: rgba(255, 255, 255, 0.15);
-      border-radius: 2px;
+      border-radius: 3px;
       outline: none;
     }
 
     .volume-slider::-webkit-slider-thumb {
       -webkit-appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
       background: var(--accent-cyan);
       cursor: pointer;
       box-shadow: 0 0 8px var(--accent-cyan);
     }
 
-    /* RECENTLY PLAYED HISTORY DRAWER */
     .queue-panel {
       width: 100%;
       background: var(--bg-card);
       backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--border-line);
       border-radius: 16px;
-      padding: 24px;
+      padding: clamp(16px, 3vw, 24px);
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
     }
 
@@ -316,13 +334,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 16px;
-      margin-bottom: 16px;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
       border-bottom: 1px solid var(--border-line);
     }
 
     .queue-header h4 {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       letter-spacing: 1px;
       text-transform: uppercase;
       font-family: var(--font-mono);
@@ -366,8 +384,8 @@
 
     .toast {
       position: fixed;
-      bottom: 24px;
-      background: rgba(22, 27, 34, 0.95);
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      background: rgba(22, 27, 34, 0.96);
       border: 1px solid var(--accent-cyan);
       color: var(--text-main);
       padding: 12px 24px;
@@ -375,9 +393,10 @@
       font-size: 0.85rem;
       font-family: var(--font-mono);
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-      transform: translateY(100px);
+      transform: translateY(120px);
       transition: transform 0.3s ease;
       z-index: 1000;
+      max-width: 90vw;
     }
 
     .toast.visible {
@@ -387,7 +406,7 @@
 </head>
 <body>
 
-  <div id="unmutePill" class="unmute-pill" onclick="handleUserUnlockInteraction()">
+  <div id="unmutePill" class="unmute-pill" tabindex="0" role="button" onclick="handleUserUnlockInteraction()" onkeydown="if(event.key==='Enter'||event.key===' ')handleUserUnlockInteraction()">
     <span>🔊 TAP ANYWHERE TO UNMUTE</span>
   </div>
 
@@ -422,15 +441,15 @@
 
     <!-- RESTORED NAVIGATION CONTROLS: PREVIOUS, PLAY/PAUSE, NEXT -->
     <div class="controls">
-      <button class="ctrl-btn" onclick="skipToPreviousTrack()" title="Previous Transmission">
+      <button class="ctrl-btn" onclick="skipToPreviousTrack()" title="Previous Transmission" aria-label="Previous Track">
         <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
       </button>
 
-      <button id="masterPlayBtn" class="ctrl-btn btn-play" onclick="togglePlayback()" title="Play / Pause">
+      <button id="masterPlayBtn" class="ctrl-btn btn-play" onclick="togglePlayback()" title="Play / Pause" aria-label="Play or Pause">
         <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
       </button>
 
-      <button class="ctrl-btn" onclick="skipToNextTrack()" title="Next Transmission">
+      <button class="ctrl-btn" onclick="skipToNextTrack()" title="Next Transmission" aria-label="Next Track">
         <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
       </button>
     </div>
@@ -439,7 +458,7 @@
       <svg style="width:18px;height:18px;fill:var(--text-muted);" viewBox="0 0 24 24">
         <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
       </svg>
-      <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.85" oninput="handleVolumeChange(event)">
+      <input type="range" id="volSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.80" aria-label="Volume Slider" oninput="handleVolumeChange(event)">
     </div>
 
     <!-- RECENTLY PLAYED HISTORY DRAWER (LAST 3 TRACKS) -->
@@ -454,9 +473,8 @@
 
   <div id="toastNotification" class="toast"></div>
 
-  <!-- PERSISTENT BROADCAST & WEBRTC OVERLAY AUDIO ELEMENTS -->
+  <!-- PERSISTENT BROADCAST AUDIO ELEMENT (Direct Hardware Output) -->
   <audio id="radioAudio" playsinline webkit-playsinline preload="auto"></audio>
-  <audio id="voiceoverAudio" playsinline webkit-playsinline autoplay></audio>
 
   <script>
     /**
@@ -464,18 +482,22 @@
      */
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
     const POLL_INTERVAL = 15000;
-    const WEBRTC_ROOM_ID = "pulse-radio-live-broadcast-room-2026";
+
+    // Detect Smart TV Environment to save CPU and disable audio resampling
+    const isTV = /SmartTV|Tizen|Web0S|BRAVIA|Android TV|CrKey|Roku/i.test(navigator.userAgent);
 
     // Audio Engine State
     let audioCtx = null;
     let analyser = null;
     let audioSource = null;
+    let audioCtxInitialized = false;
     let isPlaying = false;
     let currentTrackIndex = 0;
     let animationFrame = null;
     let currentBlobUrl = null;
     let isTrackLoading = false;
-    let userBaseVolume = 0.85;
+    let activeFetchAbortController = null;
+    let userBaseVolume = 0.80; // Headroom ceiling to eliminate TV DAC clipping
 
     // Ephemeral Client Listener ID
     let listenerSessionId = localStorage.getItem("PULSE_RADIO_LISTENER_ID");
@@ -490,20 +512,16 @@
     let recentlyPlayedHistory = [];
     let pollTimerId = null;
 
-    // WebRTC Listener Client
-    let listenerPeer = null;
-    let hostDataConn = null;
-    let hostMediaCall = null;
-
     const audioElement = document.getElementById("radioAudio");
-    const voiceoverElement = document.getElementById("voiceoverAudio");
 
     window.addEventListener("DOMContentLoaded", () => {
       initAudioElementListeners();
       initVisibilityChangeHandler();
       setupGlobalAutoplayUnlockListener();
-      bootstrapLiveStation();
-      initWebRTCListener();
+      
+      // Load manifest first without eager AudioContext creation (Safari-safe)
+      fetchLiveManifest();
+      pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
     });
 
     function showToast(message) {
@@ -511,6 +529,39 @@
       toast.textContent = message;
       toast.classList.add("visible");
       setTimeout(() => { toast.classList.remove("visible"); }, 4000);
+    }
+
+    // Lazy initialization of Web Audio API solely upon confirmed user interaction (Safari/WebKit safe)
+    function ensureAudioContextReady() {
+      if (!audioCtxInitialized) {
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          
+          // Connect analyser for visualizer only if not on low-power TV
+          if (!isTV && !audioSource) {
+            try {
+              audioSource = audioCtx.createMediaElementSource(audioElement);
+              analyser = audioCtx.createAnalyser();
+              analyser.fftSize = 256;
+              analyser.smoothingTimeConstant = 0.85;
+              
+              // Audio Pipeline Isolation: connect source to analyser only (NOT to destination)
+              // to prevent sample-rate resampling mismatches and DAC clipping on external speakers
+              audioSource.connect(analyser);
+              renderVisualizer();
+            } catch (dspErr) {
+              console.warn("Visualizer fallback mode active:", dspErr);
+            }
+          }
+          audioCtxInitialized = true;
+        } catch (e) {
+          console.warn("AudioContext setup deferred:", e);
+        }
+      }
+
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume().catch(e => console.warn("Context resume deferred:", e));
+      }
     }
 
     function setupGlobalAutoplayUnlockListener() {
@@ -526,135 +577,17 @@
       const pill = document.getElementById("unmutePill");
       pill.style.display = "none";
 
-      if (audioCtx && audioCtx.state === "suspended") {
-        audioCtx.resume();
-      }
+      ensureAudioContextReady();
       audioElement.muted = false;
       audioElement.volume = userBaseVolume;
 
       if (audioElement.paused && currentQueue.length > 0) {
-        audioElement.play().catch(err => console.warn("Playback resume retry:", err));
-      }
-    }
-
-    async function bootstrapLiveStation() {
-      try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        try {
-          audioSource = audioCtx.createMediaElementSource(audioElement);
-          analyser = audioCtx.createAnalyser();
-          analyser.fftSize = 256;
-          analyser.smoothingTimeConstant = 0.85;
-          audioSource.connect(analyser);
-          analyser.connect(audioCtx.destination);
-          renderVisualizer();
-        } catch (e) {
-          console.warn("Visualizer operating in fallback mode.");
-        }
-
-        audioElement.volume = userBaseVolume;
-
-        await fetchLiveManifest();
-        pollTimerId = setInterval(fetchLiveManifest, POLL_INTERVAL);
-      } catch (err) {
-        console.error("Bootstrap error:", err);
-      }
-    }
-
-    // WebRTC Real-Time Listener Initialization
-    function initWebRTCListener() {
-      try {
-        listenerPeer = new Peer({ debug: 1 });
-
-        listenerPeer.on("open", () => {
-          connectToBroadcastHost();
+        audioElement.play().catch(err => {
+          if (err.name !== "AbortError") {
+            console.warn("Playback unlock attempt:", err);
+          }
         });
-
-        listenerPeer.on("call", (call) => {
-          hostMediaCall = call;
-          call.answer(); // Auto-answer broadcast stream
-          call.on("stream", (remoteStream) => {
-            voiceoverElement.srcObject = remoteStream;
-            voiceoverElement.volume = 1.0;
-            voiceoverElement.play().catch(e => console.warn("Live stream voice autoplay:", e));
-          });
-        });
-      } catch (e) {
-        console.warn("WebRTC listener peer init:", e);
       }
-    }
-
-    function connectToBroadcastHost() {
-      if (!listenerPeer || listenerPeer.destroyed) return;
-
-      hostDataConn = listenerPeer.connect(WEBRTC_ROOM_ID);
-
-      hostDataConn.on("open", () => {
-        // Request media call if host is broadcasting
-        const dummyCanvas = document.createElement("canvas");
-        const dummyStream = dummyCanvas.captureStream ? dummyCanvas.captureStream() : null;
-        if (dummyStream) {
-          const call = listenerPeer.call(WEBRTC_ROOM_ID, dummyStream);
-          call.on("stream", (remoteStream) => {
-            voiceoverElement.srcObject = remoteStream;
-            voiceoverElement.volume = 1.0;
-            voiceoverElement.play().catch(e => console.warn("Live stream voice:", e));
-          });
-        }
-      });
-
-      hostDataConn.on("data", (data) => {
-        if (data.type === "VOICEOVER_START") {
-          showToast(`⚡ Live Contributor Voiceover: @${data.uploader || "Host"}`);
-          duckMainVolume(0.15, 100);
-        } else if (data.type === "VOICEOVER_END") {
-          restoreMainVolume(250);
-          voiceoverElement.srcObject = null;
-        }
-      });
-
-      hostDataConn.on("close", () => {
-        setTimeout(connectToBroadcastHost, 10000);
-      });
-
-      hostDataConn.on("error", () => {
-        setTimeout(connectToBroadcastHost, 15000);
-      });
-    }
-
-    function duckMainVolume(targetVolRatio, durationMs) {
-      const startVol = audioElement.volume;
-      const targetVol = userBaseVolume * targetVolRatio;
-      const steps = 10;
-      const stepInterval = durationMs / steps;
-      let currentStep = 0;
-
-      const duckTimer = setInterval(() => {
-        currentStep++;
-        audioElement.volume = Math.max(0.05, startVol + ((targetVol - startVol) * (currentStep / steps)));
-        if (currentStep >= steps) {
-          clearInterval(duckTimer);
-          audioElement.volume = targetVol;
-        }
-      }, stepInterval);
-    }
-
-    function restoreMainVolume(durationMs = 250) {
-      const startVol = audioElement.volume;
-      const targetVol = userBaseVolume;
-      const steps = 10;
-      const stepInterval = durationMs / steps;
-      let currentStep = 0;
-
-      const restoreTimer = setInterval(() => {
-        currentStep++;
-        audioElement.volume = Math.min(1.0, startVol + ((targetVol - startVol) * (currentStep / steps)));
-        if (currentStep >= steps) {
-          clearInterval(restoreTimer);
-          audioElement.volume = targetVol;
-        }
-      }, stepInterval);
     }
 
     function initAudioElementListeners() {
@@ -673,22 +606,21 @@
 
       audioElement.addEventListener("error", (e) => {
         const err = audioElement.error;
-        let details = "Unknown Media Error";
+        let details = "Media Error";
         if (err) {
           switch (err.code) {
-            case MediaError.MEDIA_ERR_ABORTED: details = "Playback aborted"; break;
-            case MediaError.MEDIA_ERR_NETWORK: details = "Network error downloading audio"; break;
-            case MediaError.MEDIA_ERR_DECODE: details = "Audio decode corrupted/unsupported"; break;
-            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: details = "Audio source format not supported"; break;
+            case MediaError.MEDIA_ERR_ABORTED: return; // Do not skip on abort
+            case MediaError.MEDIA_ERR_NETWORK: details = "Network error"; break;
+            case MediaError.MEDIA_ERR_DECODE: details = "Decode error"; break;
+            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED: details = "Format unsupported"; break;
           }
-          if (err.message) details += " - " + err.message;
         }
-        console.error("Audio playback failure:", details, e);
-        showToast(`Skipped track (${details}). Advancing...`);
-        setTimeout(skipToNextTrack, 1500);
+        console.warn("Audio element error:", details);
+        setTimeout(handleTrackEnded, 1500);
       });
 
-      audioElement.addEventListener("play", () => {
+      // Synchronize playback UI strictly with native media events
+      audioElement.addEventListener("playing", () => {
         isPlaying = true;
         updatePlayStateUI();
       });
@@ -699,7 +631,6 @@
       });
     }
 
-    // Media Session Integration with Restored Hardware Skipping
     function syncMediaSession(track) {
       if ("mediaSession" in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -718,7 +649,6 @@
       }
     }
 
-    // Manifest Polling & Heartbeat
     async function fetchLiveManifest() {
       try {
         const endpoint = `${GAS_ENDPOINT_URL}?action=getLiveManifest&listenerId=${encodeURIComponent(listenerSessionId)}`;
@@ -736,7 +666,8 @@
           }
         }
       } catch (err) {
-        console.warn("Background manifest poll failed. Will retry.", err);
+        // Keep polling quiet without spamming UI
+        console.warn("Manifest sync notice:", err.message);
       }
     }
 
@@ -772,7 +703,6 @@
       }
     }
 
-    // Queue Navigation & History Logging
     function handleTrackEnded() {
       const finishedTrack = currentQueue[currentTrackIndex];
       if (finishedTrack) {
@@ -855,21 +785,31 @@
       });
     }
 
-    // Proxied Audio Loader
+    // Safari/WebKit Safe Audio Loader & Memory Audit
     async function loadAndPlayTrack(track) {
-      if (!track || isTrackLoading) return;
-      isTrackLoading = true;
+      if (!track) return;
+      
+      // Cancel prior pending fetch request if skipping rapidly
+      if (activeFetchAbortController) {
+        activeFetchAbortController.abort();
+      }
+      activeFetchAbortController = new AbortController();
 
+      isTrackLoading = true;
       document.getElementById("currentTitle").textContent = "Buffering: " + (track.title || track.fileName);
       document.getElementById("currentContributor").textContent = `BROADCAST BY @${track.uploaderUsername} (${track.uploaderName})`;
 
       try {
         const streamUrl = `${GAS_ENDPOINT_URL}?action=streamAudio&fileId=${encodeURIComponent(track.fileId)}`;
-        const res = await fetch(streamUrl, { method: "GET", mode: "cors" });
+        const res = await fetch(streamUrl, { 
+          method: "GET", 
+          mode: "cors",
+          signal: activeFetchAbortController.signal
+        });
         const json = await res.json();
 
         if (!json.success || !json.base64) {
-          throw new Error(json.error || "Backend stream returned invalid payload");
+          throw new Error(json.error || "Backend returned invalid audio stream");
         }
 
         const byteCharacters = atob(json.base64);
@@ -878,20 +818,31 @@
           byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
 
-        const audioBlob = new Blob([byteNumbers], { type: json.mimeType || track.mimeType || "audio/webm" });
+        const audioBlob = new Blob([byteNumbers], { type: json.mimeType || "audio/webm" });
 
+        // Revoke prior Object URL to eliminate memory leaks
         if (currentBlobUrl) {
           URL.revokeObjectURL(currentBlobUrl);
+          currentBlobUrl = null;
         }
 
         currentBlobUrl = URL.createObjectURL(audioBlob);
+
+        // Safari-safe assignment: pause before replacing src and reloading
+        audioElement.pause();
         audioElement.src = currentBlobUrl;
         audioElement.load();
+
+        ensureAudioContextReady();
 
         const playPromise = audioElement.play();
         if (playPromise !== undefined) {
           playPromise.catch(error => {
-            console.warn("Unmuted autoplay restricted. Displaying unmute pill.");
+            if (error.name === "AbortError") {
+              // Ignore expected abort from track transitions
+              return;
+            }
+            console.warn("Playback gesture needed. Showing unmute banner.");
             audioElement.muted = true;
             audioElement.play().catch(e => console.warn("Muted playback attempt:", e));
             document.getElementById("unmutePill").style.display = "inline-flex";
@@ -901,23 +852,29 @@
         document.getElementById("currentTitle").textContent = track.title || track.fileName;
         syncMediaSession(track);
       } catch (err) {
-        console.error("Failed to stream audio via proxy:", err);
-        showToast("Error buffering track: " + err.message);
-        setTimeout(skipToNextTrack, 1500);
+        if (err.name === "AbortError") {
+          return; // Fetch aborted due to rapid skip
+        }
+        console.warn("Buffer notice:", err.message);
+        setTimeout(handleTrackEnded, 1500);
       } finally {
         isTrackLoading = false;
       }
     }
 
     function togglePlayback() {
-      if (audioCtx && audioCtx.state === "suspended") {
-        audioCtx.resume();
-      }
+      ensureAudioContextReady();
+      
       if (audioElement.muted) {
         audioElement.muted = false;
       }
+
       if (audioElement.paused) {
-        audioElement.play();
+        audioElement.play().catch(err => {
+          if (err.name !== "AbortError") {
+            console.warn("Play toggle:", err);
+          }
+        });
       } else {
         audioElement.pause();
       }
@@ -942,6 +899,8 @@
     }
 
     function renderVisualizer() {
+      if (isTV || !analyser) return; // Completely disabled on TV browsers to free 100% CPU
+
       const canvas = document.getElementById("visCanvas");
       const ctx = canvas.getContext("2d");
       
@@ -965,7 +924,7 @@
         let x = 0;
 
         for (let i = 0; i < barCount; i++) {
-          const barHeight = (dataArray[i * 2] / 255) * canvas.clientHeight * 0.9;
+          const barHeight = (dataArray[i * 2] / 255) * canvas.clientHeight * 0.85;
           
           const gradient = ctx.createLinearGradient(0, canvas.clientHeight, 0, 0);
           gradient.addColorStop(0, "#7928CA");
@@ -985,7 +944,7 @@
         if (document.hidden) {
           if (animationFrame) cancelAnimationFrame(animationFrame);
         } else {
-          if (analyser) renderVisualizer();
+          if (analyser && !isTV) renderVisualizer();
         }
       });
     }

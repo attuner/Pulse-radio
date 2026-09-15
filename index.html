@@ -2,14 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>PULSE RADIO // CONTRIBUTOR STUDIO</title>
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  
+  <!-- Native Web App & PWA Capabilities -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pulse Studio">
+  <meta name="theme-color" content="#090A0F">
+  <meta name="mobile-web-app-capable" content="yes">
+
   <style>
     :root {
       --bg-primary: #090A0F;
       --bg-surface: #0E1117;
-      --panel-bg: rgba(22, 27, 34, 0.78);
+      --panel-bg: rgba(22, 27, 34, 0.85);
       --panel-border: rgba(255, 255, 255, 0.08);
       --accent-cyan: #00F0FF;
       --accent-cyan-dim: rgba(0, 240, 255, 0.15);
@@ -26,28 +33,29 @@
     body {
       background-color: var(--bg-primary);
       background-image: 
-        radial-gradient(circle at 10% 20%, rgba(121, 40, 202, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 10% 20%, rgba(121, 40, 202, 0.14) 0%, transparent 40%),
         radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.08) 0%, transparent 40%);
       color: var(--text-primary);
       font-family: var(--font-stack);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px;
+      padding: calc(20px + env(safe-area-inset-top, 0px)) calc(16px + env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
     }
 
     .container {
       width: 100%;
-      max-width: 900px;
+      max-width: 860px;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 24px;
-      margin-bottom: 24px;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
       border-bottom: 1px solid var(--panel-border);
     }
 
@@ -101,7 +109,7 @@
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--panel-border);
       border-radius: 16px;
-      padding: 32px;
+      padding: clamp(20px, 4vw, 32px);
       margin-bottom: 24px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
@@ -120,17 +128,28 @@
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: 10px 16px;
+      padding: 12px 16px;
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
       border-radius: 8px;
+      min-height: 48px;
       transition: all 0.2s ease;
     }
 
     .tab-btn.active {
       background: var(--accent-cyan-dim);
       color: var(--accent-cyan);
+    }
+
+    /* High-contrast focus state for Smart TV remote controllers */
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    a:focus-visible,
+    .dropzone:focus-visible {
+      outline: 3px solid var(--accent-cyan) !important;
+      outline-offset: 3px !important;
     }
 
     .form-group {
@@ -153,10 +172,11 @@
       background: rgba(0, 0, 0, 0.5);
       border: 1px solid var(--panel-border);
       border-radius: 8px;
-      padding: 12px 16px;
+      padding: 14px 16px;
       color: var(--text-primary);
       font-family: inherit;
       font-size: 0.95rem;
+      min-height: 48px;
       outline: none;
       transition: border-color 0.2s;
     }
@@ -181,6 +201,7 @@
       transition: all 0.2s ease;
       border: none;
       text-transform: uppercase;
+      min-height: 48px;
     }
 
     .btn-primary {
@@ -210,7 +231,6 @@
       filter: grayscale(1);
     }
 
-    /* Studio Interface */
     .user-banner {
       display: flex;
       justify-content: space-between;
@@ -232,12 +252,13 @@
     }
 
     .logout-btn {
-      padding: 6px 12px;
+      padding: 8px 16px;
       background: transparent;
       border: 1px solid var(--panel-border);
       border-radius: 6px;
       color: var(--text-muted);
       font-size: 0.75rem;
+      min-height: 40px;
       cursor: pointer;
     }
 
@@ -250,8 +271,8 @@
       background: rgba(0, 240, 255, 0.05);
       border: 1px solid rgba(0, 240, 255, 0.2);
       border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 20px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -259,102 +280,16 @@
       font-family: var(--font-mono);
     }
 
-    /* DUAL BUTTON ZERO-DELAY LIVE VOICEOVER CONSOLE */
-    .ptt-wrapper {
-      margin-bottom: 24px;
-      padding: 20px;
-      background: rgba(255, 59, 48, 0.06);
-      border: 1px dashed rgba(255, 59, 48, 0.35);
-      border-radius: 12px;
-      text-align: center;
-    }
-
-    .ptt-title {
-      font-size: 0.75rem;
-      font-family: var(--font-mono);
-      color: var(--accent-crimson);
-      margin-bottom: 14px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-
-    .ptt-dual-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .live-toggle-btn {
-      padding: 16px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 0.9rem;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border: none;
-      text-transform: uppercase;
-    }
-
-    .btn-start-live {
-      background: rgba(52, 199, 89, 0.15);
-      border: 2px solid #34C759;
-      color: #34C759;
-    }
-
-    .btn-start-live:hover:not(:disabled) {
-      background: #34C759;
-      color: #000;
-      box-shadow: 0 0 20px rgba(52, 199, 89, 0.5);
-    }
-
-    .btn-start-live.broadcasting {
-      background: var(--accent-crimson);
-      border-color: var(--accent-crimson);
-      color: #FFF;
-      box-shadow: 0 0 25px rgba(255, 59, 48, 0.7);
-      animation: livePulseGlow 1.5s infinite;
-    }
-
-    @keyframes livePulseGlow {
-      0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 59, 48, 0.7); }
-      50% { transform: scale(1.02); box-shadow: 0 0 35px rgba(255, 59, 48, 0.95); }
-    }
-
-    .btn-end-live {
-      background: rgba(255, 59, 48, 0.15);
-      border: 2px solid var(--accent-crimson);
-      color: var(--accent-crimson);
-    }
-
-    .btn-end-live:hover:not(:disabled) {
-      background: var(--accent-crimson);
-      color: #FFF;
-      box-shadow: 0 0 20px rgba(255, 59, 48, 0.5);
-    }
-
-    .ptt-indicator {
-      font-size: 0.75rem;
-      font-family: var(--font-mono);
-      margin-top: 12px;
-      color: var(--text-muted);
-    }
-
     .rec-studio {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 0;
+      padding: 16px 0;
     }
 
     .timecode {
       font-family: var(--font-mono);
-      font-size: 3rem;
+      font-size: clamp(2.2rem, 5vw, 3rem);
       font-weight: 700;
       color: var(--text-primary);
       letter-spacing: 2px;
@@ -454,7 +389,7 @@
     .dropzone {
       border: 2px dashed var(--panel-border);
       border-radius: 12px;
-      padding: 40px 24px;
+      padding: clamp(24px, 5vw, 40px);
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
@@ -501,7 +436,7 @@
 
     audio {
       width: 100%;
-      height: 40px;
+      height: 48px;
     }
 
     .alert {
@@ -530,7 +465,9 @@
       gap: 6px;
       color: var(--accent-cyan);
       text-decoration: none;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      min-height: 48px;
+      padding: 8px 16px;
       margin-top: 16px;
     }
 
@@ -603,28 +540,8 @@
 
       <!-- 50-SLOT CAPACITY INDICATOR -->
       <div class="capacity-banner">
-        <span>STORAGE RETENTION: 50-TRACK BUFFER</span>
-        <span style="color:var(--accent-cyan);">FIFO QUEUE ACTIVE (MAX 50)</span>
-      </div>
-
-      <!-- DUAL BUTTON ZERO-DELAY LIVE VOICEOVER CONSOLE -->
-      <div class="ptt-wrapper">
-        <div class="ptt-title">⚡ Contributor Override: Zero-Delay WebRTC Live Stream</div>
-        <div class="ptt-dual-grid">
-          <button id="btnStartLive" class="live-toggle-btn btn-start-live" onclick="startLiveVoiceover()">
-            <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 24 24">
-              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-            </svg>
-            <span id="startLiveText">START LIVE</span>
-          </button>
-          <button id="btnEndLive" class="live-toggle-btn btn-end-live" onclick="endLiveVoiceover()" disabled>
-            <svg style="width:18px;height:18px;fill:currentColor;" viewBox="0 0 24 24">
-              <path d="M6 6h12v12H6z"/>
-            </svg>
-            <span>END LIVE</span>
-          </button>
-        </div>
-        <div id="pttStatus" class="ptt-indicator">Zero-delay peer broadcast ready. Tap START LIVE to override receiver audio.</div>
+        <span>STORAGE BUFFER: 50 TRACKS MAX</span>
+        <span style="color:var(--accent-cyan);">FIFO ACTIVE</span>
       </div>
 
       <div class="tabs">
@@ -640,9 +557,9 @@
         </div>
 
         <div class="rec-studio">
-          <div id="recordTrigger" class="rec-circle-btn" onclick="toggleRecording()">
+          <button id="recordTrigger" class="rec-circle-btn" onclick="toggleRecording()" aria-label="Toggle Recording">
             <div class="rec-circle-inner"></div>
-          </div>
+          </button>
           <span id="clipIndicator" class="clip-badge">0 dBFS PEAK</span>
           <div class="timecode" id="recTimecode">00:00:00</div>
           
@@ -661,7 +578,7 @@
 
       <!-- TAB 2: FILE INGEST -->
       <div id="fileConsole" style="display: none;">
-        <div class="dropzone" id="dropArea" onclick="document.getElementById('audioFileInput').click()">
+        <div class="dropzone" id="dropArea" tabindex="0" onclick="document.getElementById('audioFileInput').click()" onkeydown="if(event.key==='Enter'||event.key===' ')document.getElementById('audioFileInput').click()">
           <svg style="width:48px;height:48px;fill:var(--text-muted);margin-bottom:12px;" viewBox="0 0 24 24">
             <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
           </svg>
@@ -680,7 +597,7 @@
 
         <div class="form-group" style="margin-top: 16px;">
           <label for="trackTitle">Broadcast Transmission Title</label>
-          <input type="text" id="trackTitle" placeholder="e.g. Midnight Thoughts Episode 12">
+          <input type="text" id="trackTitle" placeholder="e.g. Midnight Transmission Vol. 1">
         </div>
 
         <button id="publishBtn" class="btn btn-primary" onclick="initiateUploadPipeline()" disabled>
@@ -714,7 +631,6 @@
     const GAS_ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbzSY4pGUK9WEEnTKjkZ50MOAc5hYjVcxQmuJp5mL9wheuTDgLvQEoHqPyYurfyo5fuL/exec";
     const CLIENT_SALT = "::pulse_radio_salt_2026";
     const MAX_FILE_SIZE = 20 * 1024 * 1024;
-    const WEBRTC_ROOM_ID = "pulse-radio-live-broadcast-room-2026";
 
     // State Variables
     let currentAuthMode = "login";
@@ -731,13 +647,7 @@
     let isPaused = false;
     let processedBlob = null;
     let processedDuration = 0;
-
-    // WebRTC Host State
-    let hostPeer = null;
-    let liveMediaStream = null;
-    let isLiveBroadcasting = false;
-    let activePeerCalls = [];
-    let activeDataConnections = [];
+    let activePreviewBlobUrl = null;
 
     window.addEventListener("DOMContentLoaded", () => {
       checkStoredSession();
@@ -860,12 +770,13 @@
       document.getElementById("profileName").textContent = currentUserSession.fullName;
       document.getElementById("profileMeta").textContent = `@${currentUserSession.username} - Active Contributor`;
       initMicrophoneHardware();
-      initWebRTCHost();
     }
 
     function logout() {
-      if (isLiveBroadcasting) endLiveVoiceover();
-      if (hostPeer) hostPeer.destroy();
+      if (activePreviewBlobUrl) {
+        URL.revokeObjectURL(activePreviewBlobUrl);
+        activePreviewBlobUrl = null;
+      }
       localStorage.removeItem("PULSE_RADIO_AUTH_SESSION");
       currentUserSession = null;
       if (audioStream) audioStream.getTracks().forEach(t => t.stop());
@@ -879,126 +790,6 @@
       document.getElementById("fileConsole").style.display = tab === "file" ? "block" : "none";
     }
 
-    // WebRTC Host Node Initialization
-    function initWebRTCHost() {
-      try {
-        hostPeer = new Peer(WEBRTC_ROOM_ID, { debug: 1 });
-        
-        hostPeer.on("open", (id) => {
-          document.getElementById("pttStatus").textContent = `⚡ Live Peer Channel Active: ${id}. Ready to broadcast.`;
-        });
-
-        hostPeer.on("connection", (conn) => {
-          activeDataConnections.push(conn);
-          conn.on("open", () => {
-            if (isLiveBroadcasting) {
-              conn.send({ type: "VOICEOVER_START", uploader: currentUserSession.username });
-            }
-          });
-          conn.on("close", () => {
-            activeDataConnections = activeDataConnections.filter(c => c !== conn);
-          });
-        });
-
-        hostPeer.on("call", (call) => {
-          if (liveMediaStream && isLiveBroadcasting) {
-            call.answer(liveMediaStream);
-            activePeerCalls.push(call);
-            call.on("close", () => {
-              activePeerCalls = activePeerCalls.filter(c => c !== call);
-            });
-          } else {
-            call.answer();
-          }
-        });
-
-        hostPeer.on("error", (err) => {
-          if (err.type === "unavailable-id") {
-            console.log("Peer ID busy; reusing existing live channel session.");
-          } else {
-            console.warn("PeerJS notice: ", err);
-          }
-        });
-      } catch (e) {
-        console.error("WebRTC initialization error: ", e);
-      }
-    }
-
-    // DUAL BUTTON WEBRTC CONTROLS
-    async function startLiveVoiceover() {
-      if (!currentUserSession) {
-        showAlert("Please sign in as contributor.");
-        return;
-      }
-      if (isLiveBroadcasting) return;
-
-      try {
-        liveMediaStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-            sampleRate: 48000
-          }
-        });
-
-        isLiveBroadcasting = true;
-
-        const startBtn = document.getElementById("btnStartLive");
-        const endBtn = document.getElementById("btnEndLive");
-        const statusText = document.getElementById("pttStatus");
-
-        startBtn.classList.add("broadcasting");
-        document.getElementById("startLiveText").textContent = "🔴 ON AIR NOW";
-        endBtn.disabled = false;
-        startBtn.disabled = true;
-        statusText.textContent = "Broadcasting zero-delay voiceover live across all listeners...";
-
-        // Alert all connected listeners to duck audio immediately
-        activeDataConnections.forEach(conn => {
-          if (conn.open) {
-            conn.send({ type: "VOICEOVER_START", uploader: currentUserSession.username });
-          }
-        });
-
-      } catch (err) {
-        showAlert("Could not access microphone for live stream: " + err.message);
-      }
-    }
-
-    function endLiveVoiceover() {
-      if (!isLiveBroadcasting) return;
-      isLiveBroadcasting = false;
-
-      // Notify all connected listeners to immediately restore music volume
-      activeDataConnections.forEach(conn => {
-        if (conn.open) {
-          conn.send({ type: "VOICEOVER_END" });
-        }
-      });
-
-      if (liveMediaStream) {
-        liveMediaStream.getTracks().forEach(t => t.stop());
-        liveMediaStream = null;
-      }
-
-      activePeerCalls.forEach(call => {
-        try { call.close(); } catch(e){}
-      });
-      activePeerCalls = [];
-
-      const startBtn = document.getElementById("btnStartLive");
-      const endBtn = document.getElementById("btnEndLive");
-      const statusText = document.getElementById("pttStatus");
-
-      startBtn.classList.remove("broadcasting");
-      document.getElementById("startLiveText").textContent = "START LIVE";
-      startBtn.disabled = false;
-      endBtn.disabled = true;
-      statusText.textContent = "Live transmission terminated. Station audio restored to normal.";
-    }
-
-    // Live Mic Console
     async function initMicrophoneHardware() {
       const select = document.getElementById("micSelect");
       select.innerHTML = "";
@@ -1068,9 +859,14 @@
 
         mediaRecorder.onstop = async () => {
           processedBlob = new Blob(recordedChunks, { type: mimeType });
-          const audioUrl = URL.createObjectURL(processedBlob);
+          
+          if (activePreviewBlobUrl) {
+            URL.revokeObjectURL(activePreviewBlobUrl);
+          }
+          activePreviewBlobUrl = URL.createObjectURL(processedBlob);
+          
           const previewAudio = document.getElementById("previewAudio");
-          previewAudio.src = audioUrl;
+          previewAudio.src = activePreviewBlobUrl;
           document.getElementById("previewBox").style.display = "block";
           document.getElementById("publishBtn").disabled = false;
 
@@ -1186,7 +982,6 @@
       draw();
     }
 
-    // Drag and Drop
     function initAudioDropzone() {
       const dropzone = document.getElementById("dropArea");
       ["dragenter", "dragover"].forEach(name => {
@@ -1222,20 +1017,24 @@
       }
 
       processedBlob = file;
-      const audioUrl = URL.createObjectURL(file);
+      
+      if (activePreviewBlobUrl) {
+        URL.revokeObjectURL(activePreviewBlobUrl);
+      }
+      activePreviewBlobUrl = URL.createObjectURL(file);
+      
       const previewAudio = document.getElementById("previewAudio");
-      previewAudio.src = audioUrl;
+      previewAudio.src = activePreviewBlobUrl;
       document.getElementById("previewBox").style.display = "block";
       document.getElementById("publishBtn").disabled = false;
 
       const tempAudio = new Audio();
-      tempAudio.src = audioUrl;
+      tempAudio.src = activePreviewBlobUrl;
       tempAudio.addEventListener("loadedmetadata", () => {
         processedDuration = tempAudio.duration;
       });
     }
 
-    // Upload Pipeline
     async function initiateUploadPipeline() {
       if (!processedBlob) {
         showAlert("No audio take found to publish.");
